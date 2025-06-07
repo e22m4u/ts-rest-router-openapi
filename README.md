@@ -2,6 +2,8 @@
 
 Генератор OpenAPI документации для REST-маршрутизатора
 
+REST-маршрутизатор [@e22m4u/ts-rest-router](https://www.npmjs.com/package/@e22m4u/ts-rest-router)  
+
 ## Установка
 
 ```bash
