@@ -1,8 +1,6 @@
 ## @e22m4u/ts-rest-router-openapi
 
-Генератор OpenAPI документации для REST-маршрутизатора
-
-REST-маршрутизатор [@e22m4u/ts-rest-router](https://www.npmjs.com/package/@e22m4u/ts-rest-router)  
+Генератор OpenAPI документации для [REST-маршрутизатора](https://www.npmjs.com/package/@e22m4u/ts-rest-router)
 
 ## Установка
 
