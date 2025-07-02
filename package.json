@@ -45,7 +45,7 @@
     "@e22m4u/ts-openapi": "~0.1.8"
   },
   "peerDependencies": {
-    "@e22m4u/ts-rest-router": "~0.2.8"
+    "@e22m4u/ts-rest-router": "~0.3.0"
   },
   "devDependencies": {
     "@commitlint/cli": "~19.8.1",
