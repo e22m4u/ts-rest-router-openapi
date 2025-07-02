@@ -1616,12 +1616,6 @@ var DATA_TYPE_TO_OA_MEDIA_TYPE = /* @__PURE__ */ new Map([
 ]);
 var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Service {
   /**
-   * Constructor.
-   */
-  constructor() {
-    super();
-  }
-  /**
    * Добавляет параметр в операцию.
    *
    * @param oaOperation
