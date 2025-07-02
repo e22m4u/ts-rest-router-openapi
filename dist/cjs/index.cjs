@@ -1204,6 +1204,7 @@ module.exports = __toCommonJS(index_exports);
 
 // dist/esm/rest-router-openapi.js
 var import_js_format11 = require("@e22m4u/js-format");
+var import_js_service3 = require("@e22m4u/js-service");
 
 // dist/esm/utils/clone-deep.js
 function cloneDeep(value) {
@@ -1596,7 +1597,6 @@ function convertExpressPathToOpenAPI(expressPath) {
 __name(convertExpressPathToOpenAPI, "convertExpressPathToOpenAPI");
 
 // dist/esm/rest-router-openapi.js
-var import_js_service3 = require("@e22m4u/js-service");
 var import_ts_openapi2 = require("@e22m4u/ts-openapi");
 var import_ts_rest_router = require("@e22m4u/ts-rest-router");
 var OPENAPI_VERSION = "3.1.0";
@@ -1615,6 +1615,12 @@ var DATA_TYPE_TO_OA_MEDIA_TYPE = /* @__PURE__ */ new Map([
   [DataType.OBJECT, import_ts_openapi2.OAMediaType.APPLICATION_JSON]
 ]);
 var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Service {
+  /**
+   * Constructor.
+   */
+  constructor() {
+    super();
+  }
   /**
    * Добавляет параметр в операцию.
    *

@@ -1,7 +1,7 @@
 import { Flatten } from './types.js';
 import { Service } from '@e22m4u/js-service';
-import { OADocumentObject, OAOperationObject, OAParameterLocation } from '@e22m4u/ts-openapi';
 import { DataSchema } from '@e22m4u/ts-data-schema';
+import { OADocumentObject, OAOperationObject, OAParameterLocation } from '@e22m4u/ts-openapi';
 /**
  * OpenAPI version.
  */
@@ -10,6 +10,10 @@ export declare const OPENAPI_VERSION = "3.1.0";
  * OpenAPI to RestRouter integration service.
  */
 export declare class RestRouterOpenAPI extends Service {
+    /**
+     * Constructor.
+     */
+    constructor();
     /**
      * Добавляет параметр в операцию.
      *

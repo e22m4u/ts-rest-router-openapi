@@ -1,8 +1,11 @@
 import { Errorf } from '@e22m4u/js-format';
-import { cloneDeep, convertExpressPathToOpenAPI, dataSchemaToOASchemaObject, deepAssign, } from './utils/index.js';
 import { Service } from '@e22m4u/js-service';
-import { OADataType, OAMediaType, OAParameterLocation, OARequestBodyReflector, OAResponseReflector, } from '@e22m4u/ts-openapi';
+import { cloneDeep } from './utils/index.js';
+import { deepAssign } from './utils/index.js';
 import { DataType } from '@e22m4u/ts-data-schema';
+import { convertExpressPathToOpenAPI } from './utils/index.js';
+import { dataSchemaToOASchemaObject } from './utils/index.js';
+import { OADataType, OAMediaType, OAParameterLocation, OARequestBodyReflector, OAResponseReflector, } from '@e22m4u/ts-openapi';
 import { ControllerRegistry, RequestDataReflector, RequestDataSource, ResponseBodyReflector, RestActionReflector, RestControllerReflector, RestRouter, } from '@e22m4u/ts-rest-router';
 /**
  * OpenAPI version.
@@ -32,6 +35,14 @@ const DATA_TYPE_TO_OA_MEDIA_TYPE = new Map([
  * OpenAPI to RestRouter integration service.
  */
 export class RestRouterOpenAPI extends Service {
+    /**
+     * Constructor.
+     */
+    constructor() {
+        // запрет передачи контейнера в качестве первого
+        // аргумента данного сервиса
+        super();
+    }
     /**
      * Добавляет параметр в операцию.
      *
