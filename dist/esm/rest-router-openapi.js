@@ -36,6 +36,14 @@ const DATA_TYPE_TO_OA_MEDIA_TYPE = new Map([
  */
 export class RestRouterOpenAPI extends Service {
     /**
+     * Constructor.
+     */
+    constructor() {
+        // запрет передачи контейнера в качестве первого
+        // аргумента данного сервиса
+        super();
+    }
+    /**
      * Добавляет параметр в операцию.
      *
      * @param oaOperation

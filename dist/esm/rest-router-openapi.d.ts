@@ -11,6 +11,10 @@ export declare const OPENAPI_VERSION = "3.1.0";
  */
 export declare class RestRouterOpenAPI extends Service {
     /**
+     * Constructor.
+     */
+    constructor();
+    /**
      * Добавляет параметр в операцию.
      *
      * @param oaOperation
