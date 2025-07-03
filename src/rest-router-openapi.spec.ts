@@ -432,17 +432,27 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {
-                          type: DataType.STRING,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
                         },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {
-                          type: DataType.STRING,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
                         },
                       },
                     ],
@@ -484,14 +494,28 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {type: DataType.STRING},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {type: DataType.STRING},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -540,20 +564,41 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {type: DataType.STRING},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {type: DataType.BOOLEAN},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.BOOLEAN,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'qux',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {type: DataType.ARRAY},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.ARRAY,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -602,14 +647,28 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {type: DataType.STRING},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {type: DataType.NUMBER},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.NUMBER,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -656,14 +715,28 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {type: DataType.STRING},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {type: DataType.STRING},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -710,19 +783,29 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value1',
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value1',
+                            },
+                          },
                         },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value2',
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value2',
+                            },
+                          },
                         },
                       },
                     ],
@@ -770,19 +853,29 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value1',
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value1',
+                            },
+                          },
                         },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.PATH,
+                        explode: false,
                         required: true,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value2',
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value2',
+                            },
+                          },
                         },
                       },
                     ],
@@ -854,15 +947,25 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.QUERY,
-                        schema: {
-                          type: DataType.STRING,
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
                         },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.QUERY,
-                        schema: {
-                          type: DataType.STRING,
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
                         },
                       },
                     ],
@@ -904,12 +1007,26 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.QUERY,
-                        schema: {type: DataType.STRING},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.QUERY,
-                        schema: {type: DataType.STRING},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -956,14 +1073,28 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.QUERY,
+                        explode: false,
                         required: true,
-                        schema: {type: DataType.STRING},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.QUERY,
+                        explode: false,
                         required: false,
-                        schema: {type: DataType.STRING},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -1013,17 +1144,38 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.QUERY,
-                        schema: {type: DataType.STRING},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.QUERY,
-                        schema: {type: DataType.NUMBER},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.NUMBER,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'qux',
                         in: OAParameterLocation.QUERY,
-                        schema: {type: DataType.BOOLEAN},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.BOOLEAN,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -1072,12 +1224,26 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.QUERY,
-                        schema: {type: DataType.STRING},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.QUERY,
-                        schema: {type: DataType.NUMBER},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.NUMBER,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -1124,17 +1290,27 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.QUERY,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value1',
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value1',
+                            },
+                          },
                         },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.QUERY,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value2',
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value2',
+                            },
+                          },
                         },
                       },
                     ],
@@ -1182,17 +1358,27 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.QUERY,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value1',
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value1',
+                            },
+                          },
                         },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.QUERY,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value2',
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value2',
+                            },
+                          },
                         },
                       },
                     ],
@@ -1264,15 +1450,25 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.HEADER,
-                        schema: {
-                          type: DataType.STRING,
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
                         },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.HEADER,
-                        schema: {
-                          type: DataType.STRING,
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
                         },
                       },
                     ],
@@ -1314,12 +1510,26 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.HEADER,
-                        schema: {type: DataType.STRING},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.HEADER,
-                        schema: {type: DataType.STRING},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -1366,14 +1576,28 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.HEADER,
+                        explode: false,
                         required: true,
-                        schema: {type: DataType.STRING},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.HEADER,
+                        explode: false,
                         required: false,
-                        schema: {type: DataType.STRING},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -1423,17 +1647,38 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.HEADER,
-                        schema: {type: DataType.STRING},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.HEADER,
-                        schema: {type: DataType.NUMBER},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.NUMBER,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'qux',
                         in: OAParameterLocation.HEADER,
-                        schema: {type: DataType.BOOLEAN},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.BOOLEAN,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -1482,12 +1727,26 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.HEADER,
-                        schema: {type: DataType.STRING},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.HEADER,
-                        schema: {type: DataType.NUMBER},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.NUMBER,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -1534,17 +1793,27 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.HEADER,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value1',
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value1',
+                            },
+                          },
                         },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.HEADER,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value2',
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value2',
+                            },
+                          },
                         },
                       },
                     ],
@@ -1592,17 +1861,27 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.HEADER,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value1',
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value1',
+                            },
+                          },
                         },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.HEADER,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value2',
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value2',
+                            },
+                          },
                         },
                       },
                     ],
@@ -1674,15 +1953,25 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.COOKIE,
-                        schema: {
-                          type: DataType.STRING,
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
                         },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.COOKIE,
-                        schema: {
-                          type: DataType.STRING,
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
                         },
                       },
                     ],
@@ -1724,12 +2013,26 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.COOKIE,
-                        schema: {type: DataType.STRING},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.COOKIE,
-                        schema: {type: DataType.STRING},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -1776,14 +2079,28 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.COOKIE,
+                        explode: false,
                         required: true,
-                        schema: {type: DataType.STRING},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.COOKIE,
+                        explode: false,
                         required: false,
-                        schema: {type: DataType.STRING},
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -1833,17 +2150,38 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.COOKIE,
-                        schema: {type: DataType.STRING},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.COOKIE,
-                        schema: {type: DataType.NUMBER},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.NUMBER,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'qux',
                         in: OAParameterLocation.COOKIE,
-                        schema: {type: DataType.BOOLEAN},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.BOOLEAN,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -1892,12 +2230,26 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.COOKIE,
-                        schema: {type: DataType.STRING},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                            },
+                          },
+                        },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.COOKIE,
-                        schema: {type: DataType.NUMBER},
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.NUMBER,
+                            },
+                          },
+                        },
                       },
                     ],
                   },
@@ -1944,17 +2296,27 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.COOKIE,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value1',
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value1',
+                            },
+                          },
                         },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.COOKIE,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value2',
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value2',
+                            },
+                          },
                         },
                       },
                     ],
@@ -2002,17 +2364,27 @@ describe('RestRouterOpenAPI', function () {
                       {
                         name: 'bar',
                         in: OAParameterLocation.COOKIE,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value1',
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value1',
+                            },
+                          },
                         },
                       },
                       {
                         name: 'baz',
                         in: OAParameterLocation.COOKIE,
-                        schema: {
-                          type: DataType.STRING,
-                          default: 'value2',
+                        explode: false,
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.STRING,
+                              default: 'value2',
+                            },
+                          },
                         },
                       },
                     ],

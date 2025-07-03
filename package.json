@@ -42,7 +42,7 @@
   "dependencies": {
     "@e22m4u/js-format": "~0.1.8",
     "@e22m4u/js-service": "~0.3.2",
-    "@e22m4u/ts-openapi": "~0.1.8"
+    "@e22m4u/ts-openapi": "~0.1.9"
   },
   "peerDependencies": {
     "@e22m4u/ts-rest-router": "~0.3.0"

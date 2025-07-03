@@ -12,6 +12,7 @@ import {
   OADataType,
   OADocumentObject,
   OAMediaType,
+  OAMediaTypeObject,
   OAOperationMethod,
   OAOperationObject,
   OAParameterLocation,
@@ -99,12 +100,16 @@ export class RestRouterOpenAPI extends Service {
     const oaParameter: OAParameterObject = existingOAParameter || {
       name: paramName,
       in: oaLocation,
+      explode: false,
     };
     if (paramSchema) {
+      // для схемы используется "application/json"
+      const oaMediaTypeObject: OAMediaTypeObject = {};
+      oaParameter.content = {[OAMediaType.APPLICATION_JSON]: oaMediaTypeObject};
       // для свойства тип ANY меняется на STRING,
       // так как ANY в OpenAPI не представлен
       if (paramSchema.type === DataType.ANY) {
-        oaParameter.schema = dataSchemaToOASchemaObject({
+        oaMediaTypeObject.schema = dataSchemaToOASchemaObject({
           ...paramSchema,
           type: DataType.STRING,
         });
@@ -112,7 +117,7 @@ export class RestRouterOpenAPI extends Service {
       // остальные тип (кроме ANY)
       // остаются без изменений
       else if (paramSchema.type != null) {
-        oaParameter.schema = dataSchemaToOASchemaObject(paramSchema);
+        oaMediaTypeObject.schema = dataSchemaToOASchemaObject(paramSchema);
       }
       // если опция required определена,
       // то ее значение передается параметру

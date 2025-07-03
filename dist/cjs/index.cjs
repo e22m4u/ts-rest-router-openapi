@@ -1636,16 +1636,19 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
     });
     const oaParameter = existingOAParameter || {
       name: paramName,
-      in: oaLocation
+      in: oaLocation,
+      explode: false
     };
     if (paramSchema) {
+      const oaMediaTypeObject = {};
+      oaParameter.content = { [import_ts_openapi2.OAMediaType.APPLICATION_JSON]: oaMediaTypeObject };
       if (paramSchema.type === DataType.ANY) {
-        oaParameter.schema = dataSchemaToOASchemaObject({
+        oaMediaTypeObject.schema = dataSchemaToOASchemaObject({
           ...paramSchema,
           type: DataType.STRING
         });
       } else if (paramSchema.type != null) {
-        oaParameter.schema = dataSchemaToOASchemaObject(paramSchema);
+        oaMediaTypeObject.schema = dataSchemaToOASchemaObject(paramSchema);
       }
       if (paramSchema.required != null)
         oaParameter.required = Boolean(paramSchema.required);
