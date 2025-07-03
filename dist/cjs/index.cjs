@@ -1666,12 +1666,13 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
    * @param doc
    */
   genOpenAPIDocument(doc) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
     if (!this.hasService(import_ts_rest_router.RestRouter))
       throw new import_js_format11.Errorf("A RestRouter instance must be registered in the RestRouterOpenAPI service.");
     const router = this.getService(import_ts_rest_router.RestRouter);
     doc = cloneDeep({ ...doc, openapi: OPENAPI_VERSION });
-    const controllers = router.getService(import_ts_rest_router.ControllerRegistry).controllers;
+    const controllerMap = router.getService(import_ts_rest_router.ControllerRegistry).controllerMap;
+    const controllers = Array.from(controllerMap.keys());
     const existingTagNames = new Set((_b = (_a = doc.tags) == null ? void 0 : _a.map((t) => t.name)) != null ? _b : []);
     for (const cls of controllers) {
       const controllerMd = import_ts_rest_router.RestControllerReflector.getMetadata(cls);
@@ -1687,20 +1688,22 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
       const tagPath = ((_d = controllerMd.path) != null ? _d : "").replace(/(^\/+|\/+$)/, "").replace(/\/+/g, "/");
       const responseBodyMdMap = import_ts_rest_router.ResponseBodyReflector.getMetadata(cls);
       const requestBodiesMdMap = import_ts_openapi2.OARequestBodyReflector.getMetadata(cls);
+      const controllerRootOptions = controllerMap.get(cls);
       for (const [actionName, actionMd] of actionsMd.entries()) {
         const oaOperation = { tags: [tagName] };
-        const operationPath = ((_e = actionMd.path) != null ? _e : "").replace(/(^\/+|\/+$)/, "").replace(/\/+/g, "/");
-        const fullOperationPath = `/${tagPath}/${operationPath}`.replace(/\/+$/, "").replace(/\/+/g, "/") || "/";
+        const rootPathPrefix = (_e = controllerRootOptions == null ? void 0 : controllerRootOptions.pathPrefix) != null ? _e : "";
+        const operationPath = ((_f = actionMd.path) != null ? _f : "").replace(/(^\/+|\/+$)/, "").replace(/\/+/g, "/");
+        const fullOperationPath = `/${rootPathPrefix}/${tagPath}/${operationPath}`.replace(/\/+$/, "").replace(/\/+/g, "/") || "/";
         const oaOperationPath = convertExpressPathToOpenAPI(fullOperationPath);
-        doc.paths = (_f = doc.paths) != null ? _f : {};
-        doc.paths[oaOperationPath] = (_g = doc.paths[oaOperationPath]) != null ? _g : {};
+        doc.paths = (_g = doc.paths) != null ? _g : {};
+        doc.paths[oaOperationPath] = (_h = doc.paths[oaOperationPath]) != null ? _h : {};
         const oaPathItem = doc.paths[oaOperationPath];
         const oaOperationMethod = actionMd.method.toLowerCase();
         oaPathItem[oaOperationMethod] = oaOperation;
         const requestDataMdMap = import_ts_rest_router.RequestDataReflector.getMetadata(cls, actionName);
         const requestDataMds = Array.from(requestDataMdMap.values()).reverse();
         for (const requestDataMd of requestDataMds) {
-          oaOperation.parameters = (_h = oaOperation.parameters) != null ? _h : [];
+          oaOperation.parameters = (_i = oaOperation.parameters) != null ? _i : [];
           if (REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source) && requestDataMd.schema && requestDataMd.schema.type === DataType.OBJECT && requestDataMd.schema.properties && typeof requestDataMd.schema.properties === "object" && Object.keys(requestDataMd.schema.properties).length && requestDataMd.property) {
             const oaLocation = REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source);
             const paramSchema = requestDataMd.schema && typeof requestDataMd.schema === "object" && requestDataMd.schema.properties && typeof requestDataMd.schema.properties === "object" && requestDataMd.schema.properties[requestDataMd.property] && typeof requestDataMd.schema.properties[requestDataMd.property] === "object" && requestDataMd.schema.properties[requestDataMd.property] || void 0;
@@ -1712,7 +1715,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
               this.addParameterToOAOperation(oaOperation, paramName, oaLocation, paramSchema);
             }
           } else if (requestDataMd.source === import_ts_rest_router.RequestDataSource.BODY) {
-            const dataType = ((_i = requestDataMd == null ? void 0 : requestDataMd.schema) == null ? void 0 : _i.type) || DataType.ANY;
+            const dataType = ((_j = requestDataMd == null ? void 0 : requestDataMd.schema) == null ? void 0 : _j.type) || DataType.ANY;
             const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
             if (!oaMediaType)
               throw new import_js_format11.Errorf("MIME of %v is not defined.", dataType);
@@ -1748,7 +1751,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
                 oaMediaObject.schema = oaSchema;
               }
             }
-            if (((_j = requestDataMd == null ? void 0 : requestDataMd.schema) == null ? void 0 : _j.required) != null)
+            if (((_k = requestDataMd == null ? void 0 : requestDataMd.schema) == null ? void 0 : _k.required) != null)
               oaBodyObject.required = Boolean(requestDataMd.schema.required);
           }
           if (!oaOperation.parameters.length)
@@ -1760,7 +1763,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
           const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
           if (!oaMediaType)
             throw new import_js_format11.Errorf("MIME of %v is not defined.", dataType);
-          oaOperation.responses = (_k = oaOperation.responses) != null ? _k : {};
+          oaOperation.responses = (_l = oaOperation.responses) != null ? _l : {};
           const oaResponses = oaOperation.responses;
           oaResponses.default = oaResponses.default || {
             description: "Example",
@@ -1790,7 +1793,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
         const responsesMdMap = import_ts_openapi2.OAResponseReflector.getMetadata(cls);
         const responsesMd = responsesMdMap.get(actionName);
         if (responsesMd) {
-          oaOperation.responses = (_l = oaOperation.responses) != null ? _l : {};
+          oaOperation.responses = (_m = oaOperation.responses) != null ? _m : {};
           const oaResponses = oaOperation.responses;
           responsesMd.reverse().forEach((responseMd) => {
             var _a2, _b2;

@@ -160,6 +160,57 @@ describe('RestRouterOpenAPI', function () {
         });
       });
 
+      it('uses path prefix from controller root options', function () {
+        @restController()
+        class FooController {
+          @getAction()
+          firstAction() {}
+          @getAction('second')
+          secondAction() {}
+        }
+        @restController('bar')
+        class BarController {
+          @getAction()
+          firstAction() {}
+          @getAction('second')
+          secondAction() {}
+        }
+        const s = new RestRouterOpenAPI();
+        const r = new RestRouter();
+        r.addController(FooController, {pathPrefix: 'token1'});
+        r.addController(BarController, {pathPrefix: 'token2'});
+        s.setService(RestRouter, r);
+        const res = s.genOpenAPIDocument(DUMMY_DOC);
+        console.log(res);
+        expect(res).to.be.eql({
+          openapi: OPENAPI_VERSION,
+          info: {title: 'Title'},
+          tags: [{name: 'Foo'}, {name: 'Bar'}],
+          paths: {
+            '/token1': {
+              get: {
+                tags: ['Foo'],
+              },
+            },
+            '/token1/second': {
+              get: {
+                tags: ['Foo'],
+              },
+            },
+            '/token2/bar': {
+              get: {
+                tags: ['Bar'],
+              },
+            },
+            '/token2/bar/second': {
+              get: {
+                tags: ['Bar'],
+              },
+            },
+          },
+        });
+      });
+
       it('adds same paths with different methods', function () {
         @restController()
         class TestController {

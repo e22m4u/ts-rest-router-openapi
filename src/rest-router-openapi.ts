@@ -150,7 +150,8 @@ export class RestRouterOpenAPI extends Service {
       );
     const router = this.getService(RestRouter);
     doc = cloneDeep({...doc, openapi: OPENAPI_VERSION});
-    const controllers = router.getService(ControllerRegistry).controllers;
+    const controllerMap = router.getService(ControllerRegistry).controllerMap;
+    const controllers = Array.from(controllerMap.keys());
     const existingTagNames = new Set(doc.tags?.map(t => t.name) ?? []);
     for (const cls of controllers) {
       const controllerMd = RestControllerReflector.getMetadata(cls);
@@ -176,15 +177,17 @@ export class RestRouterOpenAPI extends Service {
         .replace(/\/+/g, '/');
       const responseBodyMdMap = ResponseBodyReflector.getMetadata(cls);
       const requestBodiesMdMap = OARequestBodyReflector.getMetadata(cls);
+      const controllerRootOptions = controllerMap.get(cls);
       for (const [actionName, actionMd] of actionsMd.entries()) {
         // формирование операции
         // (декоратор @restAction)
         const oaOperation: OAOperationObject = {tags: [tagName]};
+        const rootPathPrefix = controllerRootOptions?.pathPrefix ?? '';
         const operationPath = (actionMd.path ?? '')
           .replace(/(^\/+|\/+$)/, '')
           .replace(/\/+/g, '/');
         const fullOperationPath =
-          `/${tagPath}/${operationPath}`
+          `/${rootPathPrefix}/${tagPath}/${operationPath}`
             .replace(/\/+$/, '')
             .replace(/\/+/g, '/') || '/';
         const oaOperationPath = convertExpressPathToOpenAPI(fullOperationPath);
