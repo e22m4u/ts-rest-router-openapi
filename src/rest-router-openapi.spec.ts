@@ -26,9 +26,9 @@ import {
 
 import {expect} from 'chai';
 import {Reflector} from '@e22m4u/ts-reflector';
+import {oaHidden} from './decorators/index.js';
+import {oaVisible} from './decorators/index.js';
 import {DataType} from '@e22m4u/ts-data-schema';
-import {oaHiddenOperation} from './decorators/index.js';
-import {oaVisibleOperation} from './decorators/index.js';
 import {OPENAPI_VERSION} from './rest-router-openapi.js';
 import {RestRouterOpenAPI} from './rest-router-openapi.js';
 
@@ -69,7 +69,7 @@ describe('RestRouterOpenAPI', function () {
     });
 
     describe('tags', function () {
-      it('creates tag name from controller class name', function () {
+      it('skips tag name of controller if no operations specified', function () {
         @restController()
         class TestController {}
         const s = new RestRouterOpenAPI();
@@ -80,7 +80,6 @@ describe('RestRouterOpenAPI', function () {
         expect(res).to.be.eql({
           openapi: OPENAPI_VERSION,
           info: {title: 'Title'},
-          tags: [{name: 'Test'}],
         });
       });
     });
@@ -3659,14 +3658,217 @@ describe('RestRouterOpenAPI', function () {
         });
       });
 
-      describe('@oaOperationVisibility', function () {
-        it('uses operation visibility metadata', function () {
+      describe('visibility', function () {
+        it('skips hidden operations by action scope', function () {
           @restController()
           class TestController {
-            @oaVisibleOperation()
+            @oaHidden()
             @getAction('first')
             firstAction() {}
-            @oaHiddenOperation()
+            @oaHidden()
+            @getAction('second')
+            secondAction() {}
+            @getAction('third')
+            thirdAction() {}
+          }
+          const s = new RestRouterOpenAPI();
+          const r = new RestRouter();
+          r.addController(TestController);
+          s.setService(RestRouter, r);
+          const res = s.genOpenAPIDocument(DUMMY_DOC);
+          expect(res).to.be.eql({
+            openapi: OPENAPI_VERSION,
+            info: {title: 'Title'},
+            tags: [{name: 'Test'}],
+            paths: {
+              '/third': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+            },
+          });
+        });
+
+        it('adds visible operations by action scope', function () {
+          @restController()
+          class TestController {
+            @oaVisible()
+            @getAction('first')
+            firstAction() {}
+            @oaVisible()
+            @getAction('second')
+            secondAction() {}
+            @getAction('third')
+            thirdAction() {}
+          }
+          const s = new RestRouterOpenAPI();
+          const r = new RestRouter();
+          r.addController(TestController);
+          s.setService(RestRouter, r);
+          const res = s.genOpenAPIDocument(DUMMY_DOC);
+          expect(res).to.be.eql({
+            openapi: OPENAPI_VERSION,
+            info: {title: 'Title'},
+            tags: [{name: 'Test'}],
+            paths: {
+              '/first': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+              '/second': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+              '/third': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+            },
+          });
+        });
+
+        it('skips hidden and adds visible operations by action scope', function () {
+          @restController()
+          class TestController {
+            @oaVisible()
+            @getAction('first')
+            firstAction() {}
+            @oaHidden()
+            @getAction('second')
+            secondAction() {}
+            @getAction('third')
+            thirdAction() {}
+          }
+          const s = new RestRouterOpenAPI();
+          const r = new RestRouter();
+          r.addController(TestController);
+          s.setService(RestRouter, r);
+          const res = s.genOpenAPIDocument(DUMMY_DOC);
+          expect(res).to.be.eql({
+            openapi: OPENAPI_VERSION,
+            info: {title: 'Title'},
+            tags: [{name: 'Test'}],
+            paths: {
+              '/first': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+              '/third': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+            },
+          });
+        });
+
+        it('skips hidden operations by controller scope', function () {
+          @restController()
+          @oaHidden()
+          class TestController {
+            @getAction('first')
+            firstAction() {}
+            @getAction('second')
+            secondAction() {}
+            @getAction('third')
+            thirdAction() {}
+          }
+          const s = new RestRouterOpenAPI();
+          const r = new RestRouter();
+          r.addController(TestController);
+          s.setService(RestRouter, r);
+          const res = s.genOpenAPIDocument(DUMMY_DOC);
+          expect(res).to.be.eql({
+            openapi: OPENAPI_VERSION,
+            info: {title: 'Title'},
+          });
+        });
+
+        it('adds hidden operations by controller scope', function () {
+          @restController()
+          @oaVisible()
+          class TestController {
+            @getAction('first')
+            firstAction() {}
+            @getAction('second')
+            secondAction() {}
+            @getAction('third')
+            thirdAction() {}
+          }
+          const s = new RestRouterOpenAPI();
+          const r = new RestRouter();
+          r.addController(TestController);
+          s.setService(RestRouter, r);
+          const res = s.genOpenAPIDocument(DUMMY_DOC);
+          expect(res).to.be.eql({
+            openapi: OPENAPI_VERSION,
+            info: {title: 'Title'},
+            tags: [{name: 'Test'}],
+            paths: {
+              '/first': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+              '/second': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+              '/third': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+            },
+          });
+        });
+
+        it('overrides hidden visibility of controller scope by action scope', function () {
+          @restController()
+          @oaHidden()
+          class TestController {
+            @oaHidden()
+            @getAction('first')
+            firstAction() {}
+            @oaVisible()
+            @getAction('second')
+            secondAction() {}
+            @getAction('third')
+            thirdAction() {}
+          }
+          const s = new RestRouterOpenAPI();
+          const r = new RestRouter();
+          r.addController(TestController);
+          s.setService(RestRouter, r);
+          const res = s.genOpenAPIDocument(DUMMY_DOC);
+          expect(res).to.be.eql({
+            openapi: OPENAPI_VERSION,
+            info: {title: 'Title'},
+            tags: [{name: 'Test'}],
+            paths: {
+              '/second': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+            },
+          });
+        });
+
+        it('overrides positive visibility of controller scope by action scope', function () {
+          @restController()
+          @oaVisible()
+          class TestController {
+            @oaVisible()
+            @getAction('first')
+            firstAction() {}
+            @oaHidden()
             @getAction('second')
             secondAction() {}
             @getAction('third')

@@ -1196,14 +1196,14 @@ var require_Reflect = __commonJS({
 // dist/esm/index.js
 var index_exports = {};
 __export(index_exports, {
-  OAOperationVisibilityReflector: () => OAOperationVisibilityReflector,
-  OA_OPERATION_VISIBILITY_METADATA_KEY: () => OA_OPERATION_VISIBILITY_METADATA_KEY,
+  OAVisibilityReflector: () => OAVisibilityReflector,
+  OA_VISIBILITY_METADATA_KEY: () => OA_VISIBILITY_METADATA_KEY,
   OPENAPI_VERSION: () => OPENAPI_VERSION,
   RestRouterOpenAPI: () => RestRouterOpenAPI,
   dataSchemaToOASchemaObject: () => dataSchemaToOASchemaObject,
-  oaHiddenOperation: () => oaHiddenOperation,
-  oaOperationVisibility: () => oaOperationVisibility,
-  oaVisibleOperation: () => oaVisibleOperation
+  oaHidden: () => oaHidden,
+  oaVisibility: () => oaVisibility,
+  oaVisible: () => oaVisible
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -1354,11 +1354,11 @@ var _MetadataKey = class _MetadataKey {
 __name(_MetadataKey, "MetadataKey");
 var MetadataKey = _MetadataKey;
 
-// dist/esm/decorators/operation-visibility-metadata.js
-var OA_OPERATION_VISIBILITY_METADATA_KEY = new MetadataKey("openApiOperationVisibilityMetadataKey");
+// dist/esm/decorators/visibility-metadata.js
+var OA_VISIBILITY_METADATA_KEY = new MetadataKey("openApiVisibilityMetadataKey");
 
-// dist/esm/decorators/operation-visibility-reflector.js
-var _OAOperationVisibilityReflector = class _OAOperationVisibilityReflector {
+// dist/esm/decorators/visibility-reflector.js
+var _OAVisibilityReflector = class _OAVisibilityReflector {
   /**
    * Set metadata.
    *
@@ -1367,42 +1367,47 @@ var _OAOperationVisibilityReflector = class _OAOperationVisibilityReflector {
    * @param propertyKey
    */
   static setMetadata(metadata, target, propertyKey) {
-    const oldMap = Reflector.getOwnMetadata(OA_OPERATION_VISIBILITY_METADATA_KEY, target);
-    const newMap = new Map(oldMap);
-    newMap.set(propertyKey, metadata);
-    Reflector.defineMetadata(OA_OPERATION_VISIBILITY_METADATA_KEY, newMap, target);
+    if (propertyKey) {
+      Reflector.defineMetadata(OA_VISIBILITY_METADATA_KEY, metadata, target, propertyKey);
+    } else {
+      Reflector.defineMetadata(OA_VISIBILITY_METADATA_KEY, metadata, target);
+    }
   }
   /**
    * Get metadata.
    *
    * @param target
+   * @param propertyKey
    */
-  static getMetadata(target) {
-    const metadata = Reflector.getOwnMetadata(OA_OPERATION_VISIBILITY_METADATA_KEY, target);
-    return metadata != null ? metadata : /* @__PURE__ */ new Map();
+  static getMetadata(target, propertyKey) {
+    if (propertyKey) {
+      return Reflector.getOwnMetadata(OA_VISIBILITY_METADATA_KEY, target, propertyKey);
+    }
+    return Reflector.getOwnMetadata(OA_VISIBILITY_METADATA_KEY, target);
   }
 };
-__name(_OAOperationVisibilityReflector, "OAOperationVisibilityReflector");
-var OAOperationVisibilityReflector = _OAOperationVisibilityReflector;
+__name(_OAVisibilityReflector, "OAVisibilityReflector");
+var OAVisibilityReflector = _OAVisibilityReflector;
 
-// dist/esm/decorators/operation-visibility-decorator.js
-function oaOperationVisibility(visible) {
+// dist/esm/decorators/visibility-decorator.js
+function oaVisibility(visible) {
   return function(target, propertyKey, descriptor) {
     const decoratorType = getDecoratorTargetType(target, propertyKey, descriptor);
-    if (decoratorType !== DecoratorTargetType.INSTANCE_METHOD)
-      throw new Error("@oaOperationVisibility decorator is only supported on an instance method.");
-    OAOperationVisibilityReflector.setMetadata({ method: propertyKey, visible }, target.constructor, propertyKey);
+    if (decoratorType !== DecoratorTargetType.CONSTRUCTOR && decoratorType !== DecoratorTargetType.INSTANCE_METHOD) {
+      throw new Error("@oaVisibility decorator is only supported on a class or an instance method.");
+    }
+    OAVisibilityReflector.setMetadata({ method: propertyKey, visible }, typeof target === "function" ? target : target.constructor, propertyKey);
   };
 }
-__name(oaOperationVisibility, "oaOperationVisibility");
-function oaHiddenOperation() {
-  return oaOperationVisibility(false);
+__name(oaVisibility, "oaVisibility");
+function oaHidden() {
+  return oaVisibility(false);
 }
-__name(oaHiddenOperation, "oaHiddenOperation");
-function oaVisibleOperation() {
-  return oaOperationVisibility(true);
+__name(oaHidden, "oaHidden");
+function oaVisible() {
+  return oaVisibility(true);
 }
-__name(oaVisibleOperation, "oaVisibleOperation");
+__name(oaVisible, "oaVisible");
 
 // dist/esm/rest-router-openapi.js
 var import_js_format11 = require("@e22m4u/js-format");
@@ -1734,35 +1739,36 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
       if (!controllerMd)
         throw new import_js_format11.Errorf("Controller class %s does not have metadata.", cls.name);
       const tagName = !/^Controller$/i.test(cls.name) ? cls.name.replace(/Controller$/i, "") : cls.name;
-      doc.tags = (_c = doc.tags) != null ? _c : [];
-      if (!existingTagNames.has(tagName)) {
-        doc.tags.push({ name: tagName });
-        existingTagNames.add(tagName);
-      }
       const actionsMd = import_ts_rest_router.RestActionReflector.getMetadata(cls);
-      const tagPath = ((_d = controllerMd.path) != null ? _d : "").replace(/(^\/+|\/+$)/, "").replace(/\/+/g, "/");
+      const tagPath = ((_c = controllerMd.path) != null ? _c : "").replace(/(^\/+|\/+$)/, "").replace(/\/+/g, "/");
       const responseBodyMdMap = import_ts_rest_router.ResponseBodyReflector.getMetadata(cls);
       const requestBodiesMdMap = import_ts_openapi2.OARequestBodyReflector.getMetadata(cls);
       const controllerRootOptions = controllerMap.get(cls);
-      const operationVisibilityMap = OAOperationVisibilityReflector.getMetadata(cls);
+      const tagVisibilityMd = OAVisibilityReflector.getMetadata(cls);
+      const isTagVisible = tagVisibilityMd == null ? void 0 : tagVisibilityMd.visible;
+      let tagOperationsCounter = 0;
       for (const [actionName, actionMd] of actionsMd.entries()) {
-        const visibilityMd = operationVisibilityMap.get(actionName);
-        if ((visibilityMd == null ? void 0 : visibilityMd.visible) === false)
+        const opVisibilityMd = OAVisibilityReflector.getMetadata(cls, actionName);
+        const isOperationVisible = opVisibilityMd == null ? void 0 : opVisibilityMd.visible;
+        if (isOperationVisible === false)
           continue;
+        if (isTagVisible === false && isOperationVisible !== true)
+          continue;
+        tagOperationsCounter++;
         const oaOperation = { tags: [tagName] };
-        const rootPathPrefix = (_e = controllerRootOptions == null ? void 0 : controllerRootOptions.pathPrefix) != null ? _e : "";
-        const operationPath = ((_f = actionMd.path) != null ? _f : "").replace(/(^\/+|\/+$)/, "").replace(/\/+/g, "/");
+        const rootPathPrefix = (_d = controllerRootOptions == null ? void 0 : controllerRootOptions.pathPrefix) != null ? _d : "";
+        const operationPath = ((_e = actionMd.path) != null ? _e : "").replace(/(^\/+|\/+$)/, "").replace(/\/+/g, "/");
         const fullOperationPath = `/${rootPathPrefix}/${tagPath}/${operationPath}`.replace(/\/+$/, "").replace(/\/+/g, "/") || "/";
         const oaOperationPath = convertExpressPathToOpenAPI(fullOperationPath);
-        doc.paths = (_g = doc.paths) != null ? _g : {};
-        doc.paths[oaOperationPath] = (_h = doc.paths[oaOperationPath]) != null ? _h : {};
+        doc.paths = (_f = doc.paths) != null ? _f : {};
+        doc.paths[oaOperationPath] = (_g = doc.paths[oaOperationPath]) != null ? _g : {};
         const oaPathItem = doc.paths[oaOperationPath];
         const oaOperationMethod = actionMd.method.toLowerCase();
         oaPathItem[oaOperationMethod] = oaOperation;
         const requestDataMdMap = import_ts_rest_router.RequestDataReflector.getMetadata(cls, actionName);
         const requestDataMds = Array.from(requestDataMdMap.values()).reverse();
         for (const requestDataMd of requestDataMds) {
-          oaOperation.parameters = (_i = oaOperation.parameters) != null ? _i : [];
+          oaOperation.parameters = (_h = oaOperation.parameters) != null ? _h : [];
           if (REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source) && requestDataMd.schema && requestDataMd.schema.type === DataType.OBJECT && requestDataMd.schema.properties && typeof requestDataMd.schema.properties === "object" && Object.keys(requestDataMd.schema.properties).length && requestDataMd.property) {
             const oaLocation = REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source);
             const paramSchema = requestDataMd.schema && typeof requestDataMd.schema === "object" && requestDataMd.schema.properties && typeof requestDataMd.schema.properties === "object" && requestDataMd.schema.properties[requestDataMd.property] && typeof requestDataMd.schema.properties[requestDataMd.property] === "object" && requestDataMd.schema.properties[requestDataMd.property] || void 0;
@@ -1774,7 +1780,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
               this.addParameterToOAOperation(oaOperation, paramName, oaLocation, paramSchema);
             }
           } else if (requestDataMd.source === import_ts_rest_router.RequestDataSource.BODY) {
-            const dataType = ((_j = requestDataMd == null ? void 0 : requestDataMd.schema) == null ? void 0 : _j.type) || DataType.ANY;
+            const dataType = ((_i = requestDataMd == null ? void 0 : requestDataMd.schema) == null ? void 0 : _i.type) || DataType.ANY;
             const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
             if (!oaMediaType)
               throw new import_js_format11.Errorf("MIME of %v is not defined.", dataType);
@@ -1810,7 +1816,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
                 oaMediaObject.schema = oaSchema;
               }
             }
-            if (((_k = requestDataMd == null ? void 0 : requestDataMd.schema) == null ? void 0 : _k.required) != null)
+            if (((_j = requestDataMd == null ? void 0 : requestDataMd.schema) == null ? void 0 : _j.required) != null)
               oaBodyObject.required = Boolean(requestDataMd.schema.required);
           }
           if (!oaOperation.parameters.length)
@@ -1822,7 +1828,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
           const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
           if (!oaMediaType)
             throw new import_js_format11.Errorf("MIME of %v is not defined.", dataType);
-          oaOperation.responses = (_l = oaOperation.responses) != null ? _l : {};
+          oaOperation.responses = (_k = oaOperation.responses) != null ? _k : {};
           const oaResponses = oaOperation.responses;
           oaResponses.default = oaResponses.default || {
             description: "Example",
@@ -1852,7 +1858,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
         const responsesMdMap = import_ts_openapi2.OAResponseReflector.getMetadata(cls);
         const responsesMd = responsesMdMap.get(actionName);
         if (responsesMd) {
-          oaOperation.responses = (_m = oaOperation.responses) != null ? _m : {};
+          oaOperation.responses = (_l = oaOperation.responses) != null ? _l : {};
           const oaResponses = oaOperation.responses;
           responsesMd.reverse().forEach((responseMd) => {
             var _a2, _b2;
@@ -1870,6 +1876,13 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
           });
         }
       }
+      if (tagOperationsCounter) {
+        if (!existingTagNames.has(tagName)) {
+          doc.tags = (_m = doc.tags) != null ? _m : [];
+          doc.tags.push({ name: tagName });
+          existingTagNames.add(tagName);
+        }
+      }
     }
     return doc;
   }
@@ -1878,14 +1891,14 @@ __name(_RestRouterOpenAPI, "RestRouterOpenAPI");
 var RestRouterOpenAPI = _RestRouterOpenAPI;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  OAOperationVisibilityReflector,
-  OA_OPERATION_VISIBILITY_METADATA_KEY,
+  OAVisibilityReflector,
+  OA_VISIBILITY_METADATA_KEY,
   OPENAPI_VERSION,
   RestRouterOpenAPI,
   dataSchemaToOASchemaObject,
-  oaHiddenOperation,
-  oaOperationVisibility,
-  oaVisibleOperation
+  oaHidden,
+  oaVisibility,
+  oaVisible
 });
 /*! Bundled license information:
 

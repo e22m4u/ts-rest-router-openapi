@@ -46,18 +46,18 @@ const openAPIDoc = routerOpenAPI.genOpenAPIDocument({
 });
 ```
 
-Модуль экспортирует декоратор `@oaHiddenOperation`, позволяющий
+Модуль экспортирует декоратор `@oaHidden`, позволяющий
 скрыть метод контроллера из *OpenAPI* документа.
 
 ```ts
 import {getAction} from '@e22m4u/ts-rest-router';
 import {restController} from '@e22m4u/ts-rest-router';
-import {oaHiddenOperation} from '@e22m4u/ts-rest-router-openapi'
+import {oaHidden} from '@e22m4u/ts-rest-router-openapi'
 
 @restController()
 class MyController {
-  @getAction()
-  @oaHiddenOperation() // <- исключает операцию
+  @oaHidden()  // <- исключает операцию из OpenAPI схемы
+  @getAction() // <- декоратор метода GET
   myAction() {
     // ...
   }

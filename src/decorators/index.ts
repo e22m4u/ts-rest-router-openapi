@@ -1,3 +1,3 @@
-export * from './operation-visibility-metadata.js';
-export * from './operation-visibility-decorator.js';
-export * from './operation-visibility-reflector.js';
+export * from './visibility-metadata.js';
+export * from './visibility-decorator.js';
+export * from './visibility-reflector.js';

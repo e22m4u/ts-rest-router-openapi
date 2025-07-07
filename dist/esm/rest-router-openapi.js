@@ -3,11 +3,11 @@ import { Service } from '@e22m4u/js-service';
 import { cloneDeep } from './utils/index.js';
 import { deepAssign } from './utils/index.js';
 import { DataType } from '@e22m4u/ts-data-schema';
-import { convertExpressPathToOpenAPI } from './utils/index.js';
 import { dataSchemaToOASchemaObject } from './utils/index.js';
+import { OAVisibilityReflector } from './decorators/index.js';
+import { convertExpressPathToOpenAPI } from './utils/index.js';
 import { OADataType, OAMediaType, OAParameterLocation, OARequestBodyReflector, OAResponseReflector, } from '@e22m4u/ts-openapi';
 import { ControllerRegistry, RequestDataReflector, RequestDataSource, ResponseBodyReflector, RestActionReflector, RestControllerReflector, RestRouter, } from '@e22m4u/ts-rest-router';
-import { OAOperationVisibilityReflector } from './decorators/index.js';
 /**
  * OpenAPI version.
  */
@@ -123,11 +123,6 @@ export class RestRouterOpenAPI extends Service {
             const tagName = !/^Controller$/i.test(cls.name)
                 ? cls.name.replace(/Controller$/i, '')
                 : cls.name;
-            doc.tags = doc.tags ?? [];
-            if (!existingTagNames.has(tagName)) {
-                doc.tags.push({ name: tagName });
-                existingTagNames.add(tagName);
-            }
             // формирование операций
             // (декораторы @restAction)
             const actionsMd = RestActionReflector.getMetadata(cls);
@@ -137,13 +132,29 @@ export class RestRouterOpenAPI extends Service {
             const responseBodyMdMap = ResponseBodyReflector.getMetadata(cls);
             const requestBodiesMdMap = OARequestBodyReflector.getMetadata(cls);
             const controllerRootOptions = controllerMap.get(cls);
-            const operationVisibilityMap = OAOperationVisibilityReflector.getMetadata(cls);
+            // операция может быть скрыта с использованием
+            // мета-данных OAVisibility, установленных
+            // классу-контроллеру или его методу
+            const tagVisibilityMd = OAVisibilityReflector.getMetadata(cls);
+            const isTagVisible = tagVisibilityMd?.visible;
+            let tagOperationsCounter = 0;
             for (const [actionName, actionMd] of actionsMd.entries()) {
-                // операция может быть скрыта с использованием
-                // мета-данных OAOperationVisibility
-                const visibilityMd = operationVisibilityMap.get(actionName);
-                if (visibilityMd?.visible === false)
+                // если значение видимости данного метода явно
+                // установлено как `false`, то метод исключается
+                // из OpenAPI схемы
+                const opVisibilityMd = OAVisibilityReflector.getMetadata(cls, actionName);
+                const isOperationVisible = opVisibilityMd?.visible;
+                if (isOperationVisible === false)
                     continue;
+                // если значение видимости данного класса явно установлено
+                // как `false`, но значение видимости для текущего метода
+                // не является `true`, то метод исключается из OpenAPI схемы
+                if (isTagVisible === false && isOperationVisible !== true)
+                    continue;
+                // сохранение количества операций текущего тега для проверки
+                // необходимости его удаления из списка тегов по причине
+                // отсутствия операций
+                tagOperationsCounter++;
                 // формирование операции
                 // (декоратор @restAction)
                 const oaOperation = { tags: [tagName] };
@@ -350,6 +361,15 @@ export class RestRouterOpenAPI extends Service {
                             example: responseMd.example,
                         };
                     });
+                }
+            }
+            // если тег имеет не менее одной операции,
+            // то он добавляется в OpenAPI схему
+            if (tagOperationsCounter) {
+                if (!existingTagNames.has(tagName)) {
+                    doc.tags = doc.tags ?? [];
+                    doc.tags.push({ name: tagName });
+                    existingTagNames.add(tagName);
                 }
             }
         }
