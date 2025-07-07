@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {expect} from 'chai';
-import {Reflector} from '@e22m4u/ts-reflector';
 import {
   getAction,
   postAction,
@@ -14,11 +12,10 @@ import {
   requestQueries,
   requestQuery,
   responseBody,
-  REST_CONTROLLER_METADATA_KEY,
   restController,
   RestRouter,
+  REST_CONTROLLER_METADATA_KEY,
 } from '@e22m4u/ts-rest-router';
-import {OPENAPI_VERSION, RestRouterOpenAPI} from './rest-router-openapi.js';
 import {
   OADataType,
   OAMediaType,
@@ -26,7 +23,14 @@ import {
   oaRequestBody,
   oaResponse,
 } from '@e22m4u/ts-openapi';
+
+import {expect} from 'chai';
+import {Reflector} from '@e22m4u/ts-reflector';
 import {DataType} from '@e22m4u/ts-data-schema';
+import {oaHiddenOperation} from './decorators/index.js';
+import {oaVisibleOperation} from './decorators/index.js';
+import {OPENAPI_VERSION} from './rest-router-openapi.js';
+import {RestRouterOpenAPI} from './rest-router-openapi.js';
 
 const DUMMY_DOC = {
   info: {
@@ -3651,6 +3655,44 @@ describe('RestRouterOpenAPI', function () {
                 },
               },
             });
+          });
+        });
+      });
+
+      describe('@oaOperationVisibility', function () {
+        it('uses operation visibility metadata', function () {
+          @restController()
+          class TestController {
+            @oaVisibleOperation()
+            @getAction('first')
+            firstAction() {}
+            @oaHiddenOperation()
+            @getAction('second')
+            secondAction() {}
+            @getAction('third')
+            thirdAction() {}
+          }
+          const s = new RestRouterOpenAPI();
+          const r = new RestRouter();
+          r.addController(TestController);
+          s.setService(RestRouter, r);
+          const res = s.genOpenAPIDocument(DUMMY_DOC);
+          expect(res).to.be.eql({
+            openapi: OPENAPI_VERSION,
+            info: {title: 'Title'},
+            tags: [{name: 'Test'}],
+            paths: {
+              '/first': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+              '/third': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+            },
           });
         });
       });

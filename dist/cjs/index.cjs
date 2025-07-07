@@ -1196,75 +1196,16 @@ var require_Reflect = __commonJS({
 // dist/esm/index.js
 var index_exports = {};
 __export(index_exports, {
+  OAOperationVisibilityReflector: () => OAOperationVisibilityReflector,
+  OA_OPERATION_VISIBILITY_METADATA_KEY: () => OA_OPERATION_VISIBILITY_METADATA_KEY,
   OPENAPI_VERSION: () => OPENAPI_VERSION,
   RestRouterOpenAPI: () => RestRouterOpenAPI,
-  dataSchemaToOASchemaObject: () => dataSchemaToOASchemaObject
+  dataSchemaToOASchemaObject: () => dataSchemaToOASchemaObject,
+  oaHiddenOperation: () => oaHiddenOperation,
+  oaOperationVisibility: () => oaOperationVisibility,
+  oaVisibleOperation: () => oaVisibleOperation
 });
 module.exports = __toCommonJS(index_exports);
-
-// dist/esm/rest-router-openapi.js
-var import_js_format11 = require("@e22m4u/js-format");
-var import_js_service3 = require("@e22m4u/js-service");
-
-// dist/esm/utils/clone-deep.js
-function cloneDeep(value) {
-  return JSON.parse(JSON.stringify(value));
-}
-__name(cloneDeep, "cloneDeep");
-
-// dist/esm/utils/is-plain-object.js
-function isPlainObject(input) {
-  return !(input === null || typeof input !== "object" || Array.isArray(input) || input.constructor && input.constructor !== Object);
-}
-__name(isPlainObject, "isPlainObject");
-
-// dist/esm/utils/deep-assign.js
-function deepAssign(target, ...sources) {
-  if (!sources.length) {
-    return target;
-  }
-  const source = sources.shift();
-  if (isPlainObject(target) && isPlainObject(source)) {
-    for (const key in source) {
-      if (Object.prototype.hasOwnProperty.call(source, key)) {
-        const sourceValue = source[key];
-        const targetValue = target[key];
-        if (isPlainObject(sourceValue) && isPlainObject(targetValue)) {
-          deepAssign(targetValue, sourceValue);
-        } else {
-          target[key] = sourceValue;
-        }
-      }
-    }
-  } else {
-    throw new Error("Arguments of deepAssign should be plain objects.");
-  }
-  if (sources.length > 0) {
-    return deepAssign(target, ...sources);
-  }
-  return target;
-}
-__name(deepAssign, "deepAssign");
-
-// dist/esm/utils/data-schema-to-oa-schema-object.js
-var import_ts_openapi = require("@e22m4u/ts-openapi");
-
-// node_modules/@e22m4u/ts-data-schema/dist/esm/data-schema.js
-var DataType;
-(function(DataType3) {
-  DataType3["ANY"] = "any";
-  DataType3["STRING"] = "string";
-  DataType3["NUMBER"] = "number";
-  DataType3["BOOLEAN"] = "boolean";
-  DataType3["ARRAY"] = "array";
-  DataType3["OBJECT"] = "object";
-})(DataType || (DataType = {}));
-
-// node_modules/@e22m4u/ts-data-schema/dist/esm/errors/type-cast-error.js
-var import_js_format3 = require("@e22m4u/js-format");
-
-// node_modules/@e22m4u/ts-data-schema/dist/esm/utils/get-data-schema-from-class.js
-var import_js_format2 = require("@e22m4u/js-format");
 
 // node_modules/@e22m4u/ts-reflector/dist/esm/reflector.js
 var import_reflect_metadata = __toESM(require_Reflect(), 1);
@@ -1412,6 +1353,120 @@ var _MetadataKey = class _MetadataKey {
 };
 __name(_MetadataKey, "MetadataKey");
 var MetadataKey = _MetadataKey;
+
+// dist/esm/decorators/operation-visibility-metadata.js
+var OA_OPERATION_VISIBILITY_METADATA_KEY = new MetadataKey("openApiOperationVisibilityMetadataKey");
+
+// dist/esm/decorators/operation-visibility-reflector.js
+var _OAOperationVisibilityReflector = class _OAOperationVisibilityReflector {
+  /**
+   * Set metadata.
+   *
+   * @param metadata
+   * @param target
+   * @param propertyKey
+   */
+  static setMetadata(metadata, target, propertyKey) {
+    const oldMap = Reflector.getOwnMetadata(OA_OPERATION_VISIBILITY_METADATA_KEY, target);
+    const newMap = new Map(oldMap);
+    newMap.set(propertyKey, metadata);
+    Reflector.defineMetadata(OA_OPERATION_VISIBILITY_METADATA_KEY, newMap, target);
+  }
+  /**
+   * Get metadata.
+   *
+   * @param target
+   */
+  static getMetadata(target) {
+    const metadata = Reflector.getOwnMetadata(OA_OPERATION_VISIBILITY_METADATA_KEY, target);
+    return metadata != null ? metadata : /* @__PURE__ */ new Map();
+  }
+};
+__name(_OAOperationVisibilityReflector, "OAOperationVisibilityReflector");
+var OAOperationVisibilityReflector = _OAOperationVisibilityReflector;
+
+// dist/esm/decorators/operation-visibility-decorator.js
+function oaOperationVisibility(visible) {
+  return function(target, propertyKey, descriptor) {
+    const decoratorType = getDecoratorTargetType(target, propertyKey, descriptor);
+    if (decoratorType !== DecoratorTargetType.INSTANCE_METHOD)
+      throw new Error("@oaOperationVisibility decorator is only supported on an instance method.");
+    OAOperationVisibilityReflector.setMetadata({ method: propertyKey, visible }, target.constructor, propertyKey);
+  };
+}
+__name(oaOperationVisibility, "oaOperationVisibility");
+function oaHiddenOperation() {
+  return oaOperationVisibility(false);
+}
+__name(oaHiddenOperation, "oaHiddenOperation");
+function oaVisibleOperation() {
+  return oaOperationVisibility(true);
+}
+__name(oaVisibleOperation, "oaVisibleOperation");
+
+// dist/esm/rest-router-openapi.js
+var import_js_format11 = require("@e22m4u/js-format");
+var import_js_service3 = require("@e22m4u/js-service");
+
+// dist/esm/utils/clone-deep.js
+function cloneDeep(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+__name(cloneDeep, "cloneDeep");
+
+// dist/esm/utils/is-plain-object.js
+function isPlainObject(input) {
+  return !(input === null || typeof input !== "object" || Array.isArray(input) || input.constructor && input.constructor !== Object);
+}
+__name(isPlainObject, "isPlainObject");
+
+// dist/esm/utils/deep-assign.js
+function deepAssign(target, ...sources) {
+  if (!sources.length) {
+    return target;
+  }
+  const source = sources.shift();
+  if (isPlainObject(target) && isPlainObject(source)) {
+    for (const key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        const sourceValue = source[key];
+        const targetValue = target[key];
+        if (isPlainObject(sourceValue) && isPlainObject(targetValue)) {
+          deepAssign(targetValue, sourceValue);
+        } else {
+          target[key] = sourceValue;
+        }
+      }
+    }
+  } else {
+    throw new Error("Arguments of deepAssign should be plain objects.");
+  }
+  if (sources.length > 0) {
+    return deepAssign(target, ...sources);
+  }
+  return target;
+}
+__name(deepAssign, "deepAssign");
+
+// dist/esm/utils/data-schema-to-oa-schema-object.js
+var import_ts_openapi = require("@e22m4u/ts-openapi");
+
+// node_modules/@e22m4u/ts-data-schema/dist/esm/data-schema.js
+var DataType;
+(function(DataType3) {
+  DataType3["ANY"] = "any";
+  DataType3["STRING"] = "string";
+  DataType3["NUMBER"] = "number";
+  DataType3["BOOLEAN"] = "boolean";
+  DataType3["ARRAY"] = "array";
+  DataType3["OBJECT"] = "object";
+})(DataType || (DataType = {}));
+
+// node_modules/@e22m4u/ts-data-schema/dist/esm/errors/type-cast-error.js
+var import_js_format3 = require("@e22m4u/js-format");
+
+// node_modules/@e22m4u/ts-data-schema/dist/esm/utils/get-data-schema-from-class.js
+var import_js_format2 = require("@e22m4u/js-format");
 
 // node_modules/@e22m4u/ts-data-schema/dist/esm/decorators/data-schema-metadata.js
 var DATA_SCHEMA_CLASS_METADATA_KEY = new MetadataKey("dataSchemaClassMetadataKey");
@@ -1689,7 +1744,11 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
       const responseBodyMdMap = import_ts_rest_router.ResponseBodyReflector.getMetadata(cls);
       const requestBodiesMdMap = import_ts_openapi2.OARequestBodyReflector.getMetadata(cls);
       const controllerRootOptions = controllerMap.get(cls);
+      const operationVisibilityMap = OAOperationVisibilityReflector.getMetadata(cls);
       for (const [actionName, actionMd] of actionsMd.entries()) {
+        const visibilityMd = operationVisibilityMap.get(actionName);
+        if ((visibilityMd == null ? void 0 : visibilityMd.visible) === false)
+          continue;
         const oaOperation = { tags: [tagName] };
         const rootPathPrefix = (_e = controllerRootOptions == null ? void 0 : controllerRootOptions.pathPrefix) != null ? _e : "";
         const operationPath = ((_f = actionMd.path) != null ? _f : "").replace(/(^\/+|\/+$)/, "").replace(/\/+/g, "/");
@@ -1819,9 +1878,14 @@ __name(_RestRouterOpenAPI, "RestRouterOpenAPI");
 var RestRouterOpenAPI = _RestRouterOpenAPI;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  OAOperationVisibilityReflector,
+  OA_OPERATION_VISIBILITY_METADATA_KEY,
   OPENAPI_VERSION,
   RestRouterOpenAPI,
-  dataSchemaToOASchemaObject
+  dataSchemaToOASchemaObject,
+  oaHiddenOperation,
+  oaOperationVisibility,
+  oaVisibleOperation
 });
 /*! Bundled license information:
 

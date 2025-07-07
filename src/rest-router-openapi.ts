@@ -32,6 +32,7 @@ import {
   RestControllerReflector,
   RestRouter,
 } from '@e22m4u/ts-rest-router';
+import {OAOperationVisibilityReflector} from './decorators/index.js';
 
 /**
  * OpenAPI version.
@@ -178,7 +179,13 @@ export class RestRouterOpenAPI extends Service {
       const responseBodyMdMap = ResponseBodyReflector.getMetadata(cls);
       const requestBodiesMdMap = OARequestBodyReflector.getMetadata(cls);
       const controllerRootOptions = controllerMap.get(cls);
+      const operationVisibilityMap =
+        OAOperationVisibilityReflector.getMetadata(cls);
       for (const [actionName, actionMd] of actionsMd.entries()) {
+        // операция может быть скрыта с использованием
+        // мета-данных OAOperationVisibility
+        const visibilityMd = operationVisibilityMap.get(actionName);
+        if (visibilityMd?.visible === false) continue;
         // формирование операции
         // (декоратор @restAction)
         const oaOperation: OAOperationObject = {tags: [tagName]};
