@@ -184,7 +184,6 @@ describe('RestRouterOpenAPI', function () {
         r.addController(BarController, {pathPrefix: 'token2'});
         s.setService(RestRouter, r);
         const res = s.genOpenAPIDocument(DUMMY_DOC);
-        console.log(res);
         expect(res).to.be.eql({
           openapi: OPENAPI_VERSION,
           info: {title: 'Title'},
