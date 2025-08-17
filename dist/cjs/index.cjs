@@ -860,7 +860,7 @@ var require_Reflect = __commonJS({
           var arraySentinel = [];
           var MapIterator = (
             /** @class */
-            function() {
+            (function() {
               function MapIterator2(keys, values, selector) {
                 this._index = 0;
                 this._keys = keys;
@@ -906,11 +906,11 @@ var require_Reflect = __commonJS({
                 return { value, done: true };
               };
               return MapIterator2;
-            }()
+            })()
           );
           var Map2 = (
             /** @class */
-            function() {
+            (function() {
               function Map3() {
                 this._keys = [];
                 this._values = [];
@@ -1010,7 +1010,7 @@ var require_Reflect = __commonJS({
                 return this._cacheIndex;
               };
               return Map3;
-            }()
+            })()
           );
           return Map2;
           function getKey(key, _) {
@@ -1030,7 +1030,7 @@ var require_Reflect = __commonJS({
         function CreateSetPolyfill() {
           var Set2 = (
             /** @class */
-            function() {
+            (function() {
               function Set3() {
                 this._map = new _Map();
               }
@@ -1070,7 +1070,7 @@ var require_Reflect = __commonJS({
                 return this.keys();
               };
               return Set3;
-            }()
+            })()
           );
           return Set2;
         }
@@ -1081,7 +1081,7 @@ var require_Reflect = __commonJS({
           var rootKey = CreateUniqueKey();
           return (
             /** @class */
-            function() {
+            (function() {
               function WeakMap2() {
                 this._key = CreateUniqueKey();
               }
@@ -1123,7 +1123,7 @@ var require_Reflect = __commonJS({
                 this._key = CreateUniqueKey();
               };
               return WeakMap2;
-            }()
+            })()
           );
           function CreateUniqueKey() {
             var key;
