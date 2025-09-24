@@ -1410,7 +1410,7 @@ function oaVisible() {
 __name(oaVisible, "oaVisible");
 
 // dist/esm/rest-router-openapi.js
-var import_js_format11 = require("@e22m4u/js-format");
+var import_js_format10 = require("@e22m4u/js-format");
 var import_js_service3 = require("@e22m4u/js-service");
 
 // dist/esm/utils/clone-deep.js
@@ -1457,15 +1457,14 @@ __name(deepAssign, "deepAssign");
 var import_ts_openapi = require("@e22m4u/ts-openapi");
 
 // node_modules/@e22m4u/ts-data-schema/dist/esm/data-schema.js
-var DataType;
-(function(DataType3) {
-  DataType3["ANY"] = "any";
-  DataType3["STRING"] = "string";
-  DataType3["NUMBER"] = "number";
-  DataType3["BOOLEAN"] = "boolean";
-  DataType3["ARRAY"] = "array";
-  DataType3["OBJECT"] = "object";
-})(DataType || (DataType = {}));
+var DataType = {
+  ANY: "any",
+  STRING: "string",
+  NUMBER: "number",
+  BOOLEAN: "boolean",
+  ARRAY: "array",
+  OBJECT: "object"
+};
 
 // node_modules/@e22m4u/ts-data-schema/dist/esm/errors/type-cast-error.js
 var import_js_format3 = require("@e22m4u/js-format");
@@ -1575,21 +1574,18 @@ __name(_DecoratorTargetError, "DecoratorTargetError");
 var DecoratorTargetError = _DecoratorTargetError;
 
 // node_modules/@e22m4u/ts-data-schema/dist/esm/data-validator.js
-var import_js_format9 = require("@e22m4u/js-format");
-
-// node_modules/@e22m4u/js-debug/src/create-debugger.js
-var import_js_format6 = require("@e22m4u/js-format");
 var import_js_format7 = require("@e22m4u/js-format");
+var import_js_format8 = require("@e22m4u/js-format");
 
 // node_modules/@e22m4u/js-empty-values/src/empty-values-service.js
-var import_js_format8 = require("@e22m4u/js-format");
+var import_js_format6 = require("@e22m4u/js-format");
 var import_js_service = require("@e22m4u/js-service");
 
 // node_modules/@e22m4u/ts-data-schema/dist/esm/debuggable-service.js
 var import_js_service2 = require("@e22m4u/js-service");
 
 // node_modules/@e22m4u/ts-data-schema/dist/esm/data-type-caster.js
-var import_js_format10 = require("@e22m4u/js-format");
+var import_js_format9 = require("@e22m4u/js-format");
 
 // dist/esm/utils/data-schema-to-oa-schema-object.js
 function dataSchemaToOASchemaObject(dataSchema, defaultType) {
@@ -1728,7 +1724,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
   genOpenAPIDocument(doc) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
     if (!this.hasService(import_ts_rest_router.RestRouter))
-      throw new import_js_format11.Errorf("A RestRouter instance must be registered in the RestRouterOpenAPI service.");
+      throw new import_js_format10.Errorf("A RestRouter instance must be registered in the RestRouterOpenAPI service.");
     const router = this.getService(import_ts_rest_router.RestRouter);
     doc = cloneDeep({ ...doc, openapi: OPENAPI_VERSION });
     const controllerMap = router.getService(import_ts_rest_router.ControllerRegistry).controllerMap;
@@ -1737,7 +1733,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
     for (const cls of controllers) {
       const controllerMd = import_ts_rest_router.RestControllerReflector.getMetadata(cls);
       if (!controllerMd)
-        throw new import_js_format11.Errorf("Controller class %s does not have metadata.", cls.name);
+        throw new import_js_format10.Errorf("Controller class %s does not have metadata.", cls.name);
       const tagName = !/^Controller$/i.test(cls.name) ? cls.name.replace(/Controller$/i, "") : cls.name;
       const actionsMd = import_ts_rest_router.RestActionReflector.getMetadata(cls);
       const tagPath = ((_c = controllerMd.path) != null ? _c : "").replace(/(^\/+|\/+$)/, "").replace(/\/+/g, "/");
@@ -1783,7 +1779,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
             const dataType = ((_i = requestDataMd == null ? void 0 : requestDataMd.schema) == null ? void 0 : _i.type) || DataType.ANY;
             const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
             if (!oaMediaType)
-              throw new import_js_format11.Errorf("MIME of %v is not defined.", dataType);
+              throw new import_js_format10.Errorf("MIME of %v is not defined.", dataType);
             oaOperation.requestBody = oaOperation.requestBody || { content: {} };
             const oaBodyObject = oaOperation.requestBody;
             const oaBodyContent = oaBodyObject.content || {};
@@ -1827,7 +1823,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
           const dataType = responseBodyMd.schema.type || DataType.ANY;
           const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
           if (!oaMediaType)
-            throw new import_js_format11.Errorf("MIME of %v is not defined.", dataType);
+            throw new import_js_format10.Errorf("MIME of %v is not defined.", dataType);
           oaOperation.responses = (_k = oaOperation.responses) != null ? _k : {};
           const oaResponses = oaOperation.responses;
           oaResponses.default = oaResponses.default || {
