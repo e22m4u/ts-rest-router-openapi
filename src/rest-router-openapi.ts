@@ -225,6 +225,14 @@ export class RestRouterOpenAPI extends Service {
         const requestDataMds = Array.from(requestDataMdMap.values()).reverse();
         for (const requestDataMd of requestDataMds) {
           oaOperation.parameters = oaOperation.parameters ?? [];
+          // извлечение схемы данных запроса из фабрики
+          // (если определена) или исходного значения
+          let requestDataSchema: DataSchema | undefined;
+          if (typeof requestDataMd.schema === 'function') {
+            requestDataSchema = requestDataMd.schema(this.container);
+          } else {
+            requestDataSchema = requestDataMd.schema;
+          }
           // определенный параметр источника:
           // PATH, QUERY, HEADER, COOKIE
           // (пропускаются типы отличные от OBJECT)
@@ -232,26 +240,25 @@ export class RestRouterOpenAPI extends Service {
             REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(
               requestDataMd.source,
             ) &&
-            requestDataMd.schema &&
-            requestDataMd.schema.type === DataType.OBJECT &&
-            requestDataMd.schema.properties &&
-            typeof requestDataMd.schema.properties === 'object' &&
-            Object.keys(requestDataMd.schema.properties).length &&
+            requestDataSchema &&
+            requestDataSchema.type === DataType.OBJECT &&
+            requestDataSchema.properties &&
+            typeof requestDataSchema.properties === 'object' &&
+            Object.keys(requestDataSchema.properties).length &&
             requestDataMd.property
           ) {
             const oaLocation = REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(
               requestDataMd.source,
             )!;
             const paramSchema =
-              (requestDataMd.schema &&
-                typeof requestDataMd.schema === 'object' &&
-                requestDataMd.schema.properties &&
-                typeof requestDataMd.schema.properties === 'object' &&
-                requestDataMd.schema.properties[requestDataMd.property] &&
-                typeof requestDataMd.schema.properties[
-                  requestDataMd.property
-                ] === 'object' &&
-                requestDataMd.schema.properties[requestDataMd.property]) ||
+              (requestDataSchema &&
+                typeof requestDataSchema === 'object' &&
+                requestDataSchema.properties &&
+                typeof requestDataSchema.properties === 'object' &&
+                requestDataSchema.properties[requestDataMd.property] &&
+                typeof requestDataSchema.properties[requestDataMd.property] ===
+                  'object' &&
+                requestDataSchema.properties[requestDataMd.property]) ||
               undefined;
             // добавление параметра в операцию,
             // включая схему (при наличии)
@@ -269,17 +276,17 @@ export class RestRouterOpenAPI extends Service {
             REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(
               requestDataMd.source,
             ) &&
-            requestDataMd.schema &&
-            requestDataMd.schema.type === DataType.OBJECT &&
-            requestDataMd.schema.properties &&
-            typeof requestDataMd.schema.properties === 'object' &&
-            Object.keys(requestDataMd.schema.properties).length
+            requestDataSchema &&
+            requestDataSchema.type === DataType.OBJECT &&
+            requestDataSchema.properties &&
+            typeof requestDataSchema.properties === 'object' &&
+            Object.keys(requestDataSchema.properties).length
           ) {
             const oaLocation = REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(
               requestDataMd.source,
             )!;
             const propsSchemaEntries = Object.entries(
-              requestDataMd.schema.properties,
+              requestDataSchema.properties,
             );
             for (const [paramName, paramSchema] of propsSchemaEntries) {
               // добавление параметра в операцию,
@@ -295,7 +302,7 @@ export class RestRouterOpenAPI extends Service {
           // формирование тела запроса
           // (декоратор @requestBody)
           else if (requestDataMd.source === RequestDataSource.BODY) {
-            const dataType = requestDataMd?.schema?.type || DataType.ANY;
+            const dataType = requestDataSchema?.type || DataType.ANY;
             // если тело запроса имеет тип ANY или STRING,
             // то тело будет представлено как text/plain
             const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
@@ -318,10 +325,7 @@ export class RestRouterOpenAPI extends Service {
             // формирование схемы данных, используя STRING
             // как значение по умолчанию (вместо ANY)
             const oaSchema = dataSchemaToOASchemaObject(
-              {
-                ...requestDataMd?.schema,
-                type: dataType,
-              },
+              {...requestDataSchema, type: dataType},
               OADataType.STRING,
             );
             // если тип данных определен как OBJECT
@@ -367,8 +371,8 @@ export class RestRouterOpenAPI extends Service {
             // если опция required определена, то ее значение
             // передается схеме тела запроса с приведением
             // к логическому типу
-            if (requestDataMd?.schema?.required != null)
-              oaBodyObject.required = Boolean(requestDataMd.schema.required);
+            if (requestDataSchema?.required != null)
+              oaBodyObject.required = Boolean(requestDataSchema.required);
           }
           // если параметры операции не определены,
           // то свойство `parameters` удаляется
@@ -378,31 +382,43 @@ export class RestRouterOpenAPI extends Service {
         // (декоратор @responseBody)
         const responseBodyMd = responseBodyMdMap.get(actionName);
         if (responseBodyMd && responseBodyMd.schema) {
-          const dataType = responseBodyMd.schema.type || DataType.ANY;
-          // если тело ответа имеет тип ANY или STRING,
-          // то тело будет представлено как text/plain
-          const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
-          // если MIME для указанного DataType
-          // не определен, то выбрасывается ошибка
-          if (!oaMediaType)
-            throw new Errorf('MIME of %v is not defined.', dataType);
-          // поиск существующего объекта запроса,
-          // или создание нового объекта
-          oaOperation.responses = oaOperation.responses ?? {};
-          const oaResponses = oaOperation.responses!;
-          oaResponses.default = oaResponses.default || {
-            description: 'Example',
-            content: {},
-          };
-          const oaResponse = oaResponses.default as OAResponseObject;
-          const oaMediaObject = oaResponse.content || {};
-          // формирование схемы данных, используя STRING
-          // как значение по умолчанию (вместо ANY)
-          const oaSchema = dataSchemaToOASchemaObject(
-            responseBodyMd.schema,
-            OADataType.STRING,
-          );
-          oaMediaObject[oaMediaType] = {schema: oaSchema};
+          // извлечение схемы тела ответа из фабрики
+          // (если определена) или исходного значения
+          let responseBodySchema: DataSchema | undefined;
+          if (typeof responseBodyMd.schema === 'function') {
+            responseBodySchema = responseBodyMd.schema(this.container);
+          } else {
+            responseBodySchema = responseBodyMd.schema;
+          }
+          // если схему тела ответа определена, или схему удалось
+          // извлечь из фабрики, то формируется OpenAPI схема
+          if (responseBodySchema) {
+            const dataType = responseBodySchema.type || DataType.ANY;
+            // если тело ответа имеет тип ANY или STRING,
+            // то тело будет представлено как text/plain
+            const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
+            // если MIME для указанного DataType
+            // не определен, то выбрасывается ошибка
+            if (!oaMediaType)
+              throw new Errorf('MIME of %v is not defined.', dataType);
+            // поиск существующего объекта запроса,
+            // или создание нового объекта
+            oaOperation.responses = oaOperation.responses ?? {};
+            const oaResponses = oaOperation.responses!;
+            oaResponses.default = oaResponses.default || {
+              description: 'Example',
+              content: {},
+            };
+            const oaResponse = oaResponses.default as OAResponseObject;
+            const oaMediaObject = oaResponse.content || {};
+            // формирование схемы данных, используя STRING
+            // как значение по умолчанию (вместо ANY)
+            const oaSchema = dataSchemaToOASchemaObject(
+              responseBodySchema,
+              OADataType.STRING,
+            );
+            oaMediaObject[oaMediaType] = {schema: oaSchema};
+          }
         }
         // поддержка OARequestBodyMetadata
         // (декоратор @oaRequestBody)

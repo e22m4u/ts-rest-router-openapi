@@ -3046,6 +3046,70 @@ describe('RestRouterOpenAPI', function () {
             });
           });
         });
+
+        describe('when the data schema is a DataSchemaFactory', function () {
+          it('should extract the data schema from a factory function', function () {
+            @restController()
+            class TestController {
+              @postAction('/foo')
+              fooAction(
+                @requestBody(() => ({
+                  type: DataType.OBJECT,
+                  properties: {
+                    bar: {
+                      type: DataType.STRING,
+                      default: 'value',
+                    },
+                    baz: {
+                      type: DataType.NUMBER,
+                      default: 10,
+                    },
+                  },
+                }))
+                body?: {
+                  bar: string;
+                  baz: number;
+                },
+              ) {}
+            }
+            const s = new RestRouterOpenAPI();
+            const r = new RestRouter();
+            r.addController(TestController);
+            s.setService(RestRouter, r);
+            const res = s.genOpenAPIDocument(DUMMY_DOC);
+            expect(res).to.be.eql({
+              openapi: OPENAPI_VERSION,
+              info: {title: 'Title'},
+              tags: [{name: 'Test'}],
+              paths: {
+                '/foo': {
+                  post: {
+                    tags: ['Test'],
+                    requestBody: {
+                      content: {
+                        [OAMediaType.APPLICATION_JSON]: {
+                          schema: {
+                            type: DataType.OBJECT,
+                            properties: {
+                              bar: {
+                                type: DataType.STRING,
+                                default: 'value',
+                              },
+                              baz: {
+                                type: DataType.NUMBER,
+                                default: 10,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            });
+          });
+        });
       });
 
       describe('responseBody', function () {
@@ -3645,6 +3709,68 @@ describe('RestRouterOpenAPI', function () {
                           [OAMediaType.APPLICATION_JSON]: {
                             schema: {type: OADataType.OBJECT},
                             example: {foo: 'bar'},
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            });
+          });
+        });
+
+        describe('when the data schema is a DataSchemaFactory', function () {
+          it('should extract the data schema from a factory function', function () {
+            @restController()
+            class TestController {
+              @postAction('/foo')
+              @responseBody(() => ({
+                type: DataType.OBJECT,
+                properties: {
+                  bar: {
+                    type: DataType.STRING,
+                    default: 'value',
+                  },
+                  baz: {
+                    type: DataType.NUMBER,
+                    default: 10,
+                  },
+                },
+              }))
+              fooAction() {}
+            }
+            const s = new RestRouterOpenAPI();
+            const r = new RestRouter();
+            r.addController(TestController);
+            s.setService(RestRouter, r);
+            const res = s.genOpenAPIDocument(DUMMY_DOC);
+            expect(res).to.be.eql({
+              openapi: OPENAPI_VERSION,
+              info: {title: 'Title'},
+              tags: [{name: 'Test'}],
+              paths: {
+                '/foo': {
+                  post: {
+                    tags: ['Test'],
+                    responses: {
+                      default: {
+                        description: 'Example',
+                        content: {
+                          [OAMediaType.APPLICATION_JSON]: {
+                            schema: {
+                              type: DataType.OBJECT,
+                              properties: {
+                                bar: {
+                                  type: DataType.STRING,
+                                  default: 'value',
+                                },
+                                baz: {
+                                  type: DataType.NUMBER,
+                                  default: 10,
+                                },
+                              },
+                            },
                           },
                         },
                       },

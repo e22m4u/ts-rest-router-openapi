@@ -33,7 +33,7 @@ const router = new RestRouter();
 // router.registerController(...);
 
 // создание сервиса генерации OpenAPI документа,
-// и иньекция маршрутизатора в данный сервис
+// и инъекция маршрутизатора в данный сервис
 const routerOpenAPI = new RestRouterOpenAPI();
 routerOpenAPI.setService(RestRouter, router);
 

@@ -1722,7 +1722,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
    * @param doc
    */
   genOpenAPIDocument(doc) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
     if (!this.hasService(import_ts_rest_router.RestRouter))
       throw new import_js_format10.Errorf("A RestRouter instance must be registered in the RestRouterOpenAPI service.");
     const router = this.getService(import_ts_rest_router.RestRouter);
@@ -1765,18 +1765,24 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
         const requestDataMds = Array.from(requestDataMdMap.values()).reverse();
         for (const requestDataMd of requestDataMds) {
           oaOperation.parameters = (_h = oaOperation.parameters) != null ? _h : [];
-          if (REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source) && requestDataMd.schema && requestDataMd.schema.type === DataType.OBJECT && requestDataMd.schema.properties && typeof requestDataMd.schema.properties === "object" && Object.keys(requestDataMd.schema.properties).length && requestDataMd.property) {
+          let requestDataSchema;
+          if (typeof requestDataMd.schema === "function") {
+            requestDataSchema = requestDataMd.schema(this.container);
+          } else {
+            requestDataSchema = requestDataMd.schema;
+          }
+          if (REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source) && requestDataSchema && requestDataSchema.type === DataType.OBJECT && requestDataSchema.properties && typeof requestDataSchema.properties === "object" && Object.keys(requestDataSchema.properties).length && requestDataMd.property) {
             const oaLocation = REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source);
-            const paramSchema = requestDataMd.schema && typeof requestDataMd.schema === "object" && requestDataMd.schema.properties && typeof requestDataMd.schema.properties === "object" && requestDataMd.schema.properties[requestDataMd.property] && typeof requestDataMd.schema.properties[requestDataMd.property] === "object" && requestDataMd.schema.properties[requestDataMd.property] || void 0;
+            const paramSchema = requestDataSchema && typeof requestDataSchema === "object" && requestDataSchema.properties && typeof requestDataSchema.properties === "object" && requestDataSchema.properties[requestDataMd.property] && typeof requestDataSchema.properties[requestDataMd.property] === "object" && requestDataSchema.properties[requestDataMd.property] || void 0;
             this.addParameterToOAOperation(oaOperation, requestDataMd.property, oaLocation, paramSchema);
-          } else if (REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source) && requestDataMd.schema && requestDataMd.schema.type === DataType.OBJECT && requestDataMd.schema.properties && typeof requestDataMd.schema.properties === "object" && Object.keys(requestDataMd.schema.properties).length) {
+          } else if (REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source) && requestDataSchema && requestDataSchema.type === DataType.OBJECT && requestDataSchema.properties && typeof requestDataSchema.properties === "object" && Object.keys(requestDataSchema.properties).length) {
             const oaLocation = REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source);
-            const propsSchemaEntries = Object.entries(requestDataMd.schema.properties);
+            const propsSchemaEntries = Object.entries(requestDataSchema.properties);
             for (const [paramName, paramSchema] of propsSchemaEntries) {
               this.addParameterToOAOperation(oaOperation, paramName, oaLocation, paramSchema);
             }
           } else if (requestDataMd.source === import_ts_rest_router.RequestDataSource.BODY) {
-            const dataType = ((_i = requestDataMd == null ? void 0 : requestDataMd.schema) == null ? void 0 : _i.type) || DataType.ANY;
+            const dataType = (requestDataSchema == null ? void 0 : requestDataSchema.type) || DataType.ANY;
             const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
             if (!oaMediaType)
               throw new import_js_format10.Errorf("MIME of %v is not defined.", dataType);
@@ -1788,10 +1794,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
             const defaultOASchema = { type: import_ts_openapi2.OADataType.STRING };
             oaMediaObject.schema = oaMediaObject.schema || defaultOASchema;
             const existingOASchema = oaMediaObject.schema;
-            const oaSchema = dataSchemaToOASchemaObject({
-              ...requestDataMd == null ? void 0 : requestDataMd.schema,
-              type: dataType
-            }, import_ts_openapi2.OADataType.STRING);
+            const oaSchema = dataSchemaToOASchemaObject({ ...requestDataSchema, type: dataType }, import_ts_openapi2.OADataType.STRING);
             if (dataType === DataType.OBJECT) {
               if (existingOASchema.type === import_ts_openapi2.OADataType.OBJECT) {
                 deepAssign(existingOASchema, oaSchema);
@@ -1812,28 +1815,36 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
                 oaMediaObject.schema = oaSchema;
               }
             }
-            if (((_j = requestDataMd == null ? void 0 : requestDataMd.schema) == null ? void 0 : _j.required) != null)
-              oaBodyObject.required = Boolean(requestDataMd.schema.required);
+            if ((requestDataSchema == null ? void 0 : requestDataSchema.required) != null)
+              oaBodyObject.required = Boolean(requestDataSchema.required);
           }
           if (!oaOperation.parameters.length)
             delete oaOperation.parameters;
         }
         const responseBodyMd = responseBodyMdMap.get(actionName);
         if (responseBodyMd && responseBodyMd.schema) {
-          const dataType = responseBodyMd.schema.type || DataType.ANY;
-          const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
-          if (!oaMediaType)
-            throw new import_js_format10.Errorf("MIME of %v is not defined.", dataType);
-          oaOperation.responses = (_k = oaOperation.responses) != null ? _k : {};
-          const oaResponses = oaOperation.responses;
-          oaResponses.default = oaResponses.default || {
-            description: "Example",
-            content: {}
-          };
-          const oaResponse = oaResponses.default;
-          const oaMediaObject = oaResponse.content || {};
-          const oaSchema = dataSchemaToOASchemaObject(responseBodyMd.schema, import_ts_openapi2.OADataType.STRING);
-          oaMediaObject[oaMediaType] = { schema: oaSchema };
+          let responseBodySchema;
+          if (typeof responseBodyMd.schema === "function") {
+            responseBodySchema = responseBodyMd.schema(this.container);
+          } else {
+            responseBodySchema = responseBodyMd.schema;
+          }
+          if (responseBodySchema) {
+            const dataType = responseBodySchema.type || DataType.ANY;
+            const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
+            if (!oaMediaType)
+              throw new import_js_format10.Errorf("MIME of %v is not defined.", dataType);
+            oaOperation.responses = (_i = oaOperation.responses) != null ? _i : {};
+            const oaResponses = oaOperation.responses;
+            oaResponses.default = oaResponses.default || {
+              description: "Example",
+              content: {}
+            };
+            const oaResponse = oaResponses.default;
+            const oaMediaObject = oaResponse.content || {};
+            const oaSchema = dataSchemaToOASchemaObject(responseBodySchema, import_ts_openapi2.OADataType.STRING);
+            oaMediaObject[oaMediaType] = { schema: oaSchema };
+          }
         }
         const requestBodiesMd = requestBodiesMdMap.get(actionName);
         if (requestBodiesMd) {
@@ -1854,7 +1865,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
         const responsesMdMap = import_ts_openapi2.OAResponseReflector.getMetadata(cls);
         const responsesMd = responsesMdMap.get(actionName);
         if (responsesMd) {
-          oaOperation.responses = (_l = oaOperation.responses) != null ? _l : {};
+          oaOperation.responses = (_j = oaOperation.responses) != null ? _j : {};
           const oaResponses = oaOperation.responses;
           responsesMd.reverse().forEach((responseMd) => {
             var _a2, _b2;
@@ -1874,7 +1885,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
       }
       if (tagOperationsCounter) {
         if (!existingTagNames.has(tagName)) {
-          doc.tags = (_m = doc.tags) != null ? _m : [];
+          doc.tags = (_k = doc.tags) != null ? _k : [];
           doc.tags.push({ name: tagName });
           existingTagNames.add(tagName);
         }
