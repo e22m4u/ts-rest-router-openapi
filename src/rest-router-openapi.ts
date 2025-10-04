@@ -66,15 +66,6 @@ const DATA_TYPE_TO_OA_MEDIA_TYPE = new Map([
  */
 export class RestRouterOpenAPI extends Service {
   /**
-   * Constructor.
-   */
-  constructor() {
-    // запрет передачи контейнера в качестве первого
-    // аргумента данного сервиса
-    super();
-  }
-
-  /**
    * Добавляет параметр в операцию.
    *
    * @param oaOperation
@@ -144,12 +135,7 @@ export class RestRouterOpenAPI extends Service {
    * @param doc
    */
   genOpenAPIDocument(doc: Flatten<Omit<OADocumentObject, 'openapi'>>) {
-    if (!this.hasService(RestRouter))
-      throw new Errorf(
-        'A RestRouter instance must be registered ' +
-          'in the RestRouterOpenAPI service.',
-      );
-    const router = this.getService(RestRouter);
+    const router = this.getRegisteredService(RestRouter);
     doc = cloneDeep({...doc, openapi: OPENAPI_VERSION});
     const controllerMap = router.getService(ControllerRegistry).controllerMap;
     const controllers = Array.from(controllerMap.keys());

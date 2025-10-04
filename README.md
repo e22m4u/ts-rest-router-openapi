@@ -1,6 +1,7 @@
 ## @e22m4u/ts-rest-router-openapi
 
-Генератор OpenAPI документации для [REST-маршрутизатора](https://www.npmjs.com/package/@e22m4u/ts-rest-router)
+Генератор OpenAPI документации для
+[REST-маршрутизатора](https://www.npmjs.com/package/@e22m4u/ts-rest-router)
 
 ## Установка
 
@@ -32,10 +33,8 @@ import {RestRouterOpenAPI} from '@e22m4u/ts-rest-router-openapi';
 const router = new RestRouter();
 // router.registerController(...);
 
-// создание сервиса генерации OpenAPI документа,
-// и инъекция маршрутизатора в данный сервис
-const routerOpenAPI = new RestRouterOpenAPI();
-routerOpenAPI.setService(RestRouter, router);
+// инъекция сервиса в маршрутизатор
+const routerOpenAPI = router.getService(RestRouterOpenAPI);
 
 // генерация документа
 const openAPIDoc = routerOpenAPI.genOpenAPIDocument({

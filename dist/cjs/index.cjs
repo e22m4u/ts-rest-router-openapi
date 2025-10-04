@@ -1672,12 +1672,6 @@ var DATA_TYPE_TO_OA_MEDIA_TYPE = /* @__PURE__ */ new Map([
 ]);
 var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Service {
   /**
-   * Constructor.
-   */
-  constructor() {
-    super();
-  }
-  /**
    * Добавляет параметр в операцию.
    *
    * @param oaOperation
@@ -1723,9 +1717,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
    */
   genOpenAPIDocument(doc) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
-    if (!this.hasService(import_ts_rest_router.RestRouter))
-      throw new import_js_format10.Errorf("A RestRouter instance must be registered in the RestRouterOpenAPI service.");
-    const router = this.getService(import_ts_rest_router.RestRouter);
+    const router = this.getRegisteredService(import_ts_rest_router.RestRouter);
     doc = cloneDeep({ ...doc, openapi: OPENAPI_VERSION });
     const controllerMap = router.getService(import_ts_rest_router.ControllerRegistry).controllerMap;
     const controllers = Array.from(controllerMap.keys());

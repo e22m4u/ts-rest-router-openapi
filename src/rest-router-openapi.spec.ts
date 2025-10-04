@@ -45,7 +45,7 @@ describe('RestRouterOpenAPI', function () {
       const throwable = () => s.genOpenAPIDocument(DUMMY_DOC);
       expect(throwable).to.throw(
         Error,
-        /RestRouter instance must be registered/,
+        'The constructor RestRouter is not registered.',
       );
     });
 
