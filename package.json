@@ -1,6 +1,6 @@
 {
   "name": "@e22m4u/ts-rest-router-openapi",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Генератор OpenAPI документации для REST-маршрутизатора",
   "author": "Mikhail Evstropov <e22m4u@yandex.ru>",
   "license": "MIT",
