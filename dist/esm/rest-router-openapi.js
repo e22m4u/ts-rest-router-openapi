@@ -97,8 +97,9 @@ export class RestRouterOpenAPI extends Service {
      * Generate OpenAPI documentation.
      *
      * @param doc
+     * @param options
      */
-    genOpenAPIDocument(doc) {
+    genOpenAPIDocument(doc, options) {
         const router = this.getRegisteredService(RestRouter);
         doc = cloneDeep({ ...doc, openapi: OPENAPI_VERSION });
         const controllerMap = router.getService(ControllerRegistry).controllerMap;
@@ -116,7 +117,7 @@ export class RestRouterOpenAPI extends Service {
             // (декораторы @restAction)
             const actionsMd = RestActionReflector.getMetadata(cls);
             const tagPath = (controllerMd.path ?? '')
-                .replace(/(^\/+|\/+$)/, '')
+                .replace(/(^\/+|\/+$)/g, '')
                 .replace(/\/+/g, '/');
             const responseBodyMdMap = ResponseBodyReflector.getMetadata(cls);
             const requestBodiesMdMap = OARequestBodyReflector.getMetadata(cls);
@@ -149,11 +150,58 @@ export class RestRouterOpenAPI extends Service {
                 const oaOperation = { tags: [tagName] };
                 const rootPathPrefix = controllerRootOptions?.pathPrefix ?? '';
                 const operationPath = (actionMd.path ?? '')
-                    .replace(/(^\/+|\/+$)/, '')
+                    .replace(/(^\/+|\/+$)/g, '')
                     .replace(/\/+/g, '/');
-                const fullOperationPath = `/${rootPathPrefix}/${tagPath}/${operationPath}`
+                let fullOperationPath = `/${rootPathPrefix}/${tagPath}/${operationPath}`
                     .replace(/\/+$/, '')
                     .replace(/\/+/g, '/') || '/';
+                console.log(fullOperationPath);
+                console.log(options?.stripPathPrefix);
+                // применение опции "stripPathPrefix",
+                // которая удаляет начальную часть из адреса операции
+                if (options?.stripPathPrefix) {
+                    let pathPrefixStripList = [options?.stripPathPrefix].flat();
+                    // так как должен удаляться самый длинный префикс,
+                    // массив удаляемых префиксов сортируется по длине
+                    // (от большего к меньшему)
+                    pathPrefixStripList.sort((a, b) => b.length - a.length);
+                    // чтобы префиксы были совместимы с адресом, требуется
+                    // их нормализовать, чтобы в начале префикса была косая
+                    // черта, а в конце префикса косой черты не было
+                    pathPrefixStripList = pathPrefixStripList.map(prefix => '/' +
+                        String(prefix)
+                            .replace(/(^\/+|\/+$)/g, '')
+                            .replace(/\/+/g, '/'));
+                    for (const prefix of pathPrefixStripList) {
+                        // проверка, что путь начинается с префикса
+                        if (fullOperationPath.indexOf(prefix) === 0) {
+                            const prefixLength = prefix.length;
+                            const pathLength = fullOperationPath.length;
+                            // условие 1
+                            // путь полностью совпадает с префиксом
+                            // (например, /api/v1 и /api/v1)
+                            const isExactMatch = pathLength === prefixLength;
+                            // условие 2
+                            // префикс совпадает с сегментом пути
+                            // (например, префикс /api в пути /api/users),
+                            // для этого следующий символ после префикса должен быть '/'
+                            const isSegmentMatch = pathLength > prefixLength &&
+                                fullOperationPath[prefixLength] === '/';
+                            // удаление префикса только если выполнено одно из условий
+                            if (isExactMatch || isSegmentMatch) {
+                                fullOperationPath = fullOperationPath.slice(prefixLength);
+                                // если после удаления префикса путь стал пустым,
+                                // то он должен указывать на корень
+                                if (fullOperationPath === '') {
+                                    fullOperationPath = '/';
+                                }
+                                // так как удаляется только один подходящий префикс,
+                                // итерация завершается после первого совпадения
+                                break;
+                            }
+                        }
+                    }
+                }
                 const oaOperationPath = convertExpressPathToOpenAPI(fullOperationPath);
                 doc.paths = doc.paths ?? {};
                 doc.paths[oaOperationPath] = doc.paths[oaOperationPath] ?? {};

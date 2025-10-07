@@ -1714,8 +1714,9 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
    * Generate OpenAPI documentation.
    *
    * @param doc
+   * @param options
    */
-  genOpenAPIDocument(doc) {
+  genOpenAPIDocument(doc, options) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
     const router = this.getRegisteredService(import_ts_rest_router.RestRouter);
     doc = cloneDeep({ ...doc, openapi: OPENAPI_VERSION });
@@ -1728,7 +1729,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
         throw new import_js_format10.Errorf("Controller class %s does not have metadata.", cls.name);
       const tagName = !/^Controller$/i.test(cls.name) ? cls.name.replace(/Controller$/i, "") : cls.name;
       const actionsMd = import_ts_rest_router.RestActionReflector.getMetadata(cls);
-      const tagPath = ((_c = controllerMd.path) != null ? _c : "").replace(/(^\/+|\/+$)/, "").replace(/\/+/g, "/");
+      const tagPath = ((_c = controllerMd.path) != null ? _c : "").replace(/(^\/+|\/+$)/g, "").replace(/\/+/g, "/");
       const responseBodyMdMap = import_ts_rest_router.ResponseBodyReflector.getMetadata(cls);
       const requestBodiesMdMap = import_ts_openapi2.OARequestBodyReflector.getMetadata(cls);
       const controllerRootOptions = controllerMap.get(cls);
@@ -1745,8 +1746,30 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
         tagOperationsCounter++;
         const oaOperation = { tags: [tagName] };
         const rootPathPrefix = (_d = controllerRootOptions == null ? void 0 : controllerRootOptions.pathPrefix) != null ? _d : "";
-        const operationPath = ((_e = actionMd.path) != null ? _e : "").replace(/(^\/+|\/+$)/, "").replace(/\/+/g, "/");
-        const fullOperationPath = `/${rootPathPrefix}/${tagPath}/${operationPath}`.replace(/\/+$/, "").replace(/\/+/g, "/") || "/";
+        const operationPath = ((_e = actionMd.path) != null ? _e : "").replace(/(^\/+|\/+$)/g, "").replace(/\/+/g, "/");
+        let fullOperationPath = `/${rootPathPrefix}/${tagPath}/${operationPath}`.replace(/\/+$/, "").replace(/\/+/g, "/") || "/";
+        console.log(fullOperationPath);
+        console.log(options == null ? void 0 : options.stripPathPrefix);
+        if (options == null ? void 0 : options.stripPathPrefix) {
+          let pathPrefixStripList = [options == null ? void 0 : options.stripPathPrefix].flat();
+          pathPrefixStripList.sort((a, b) => b.length - a.length);
+          pathPrefixStripList = pathPrefixStripList.map((prefix) => "/" + String(prefix).replace(/(^\/+|\/+$)/g, "").replace(/\/+/g, "/"));
+          for (const prefix of pathPrefixStripList) {
+            if (fullOperationPath.indexOf(prefix) === 0) {
+              const prefixLength = prefix.length;
+              const pathLength = fullOperationPath.length;
+              const isExactMatch = pathLength === prefixLength;
+              const isSegmentMatch = pathLength > prefixLength && fullOperationPath[prefixLength] === "/";
+              if (isExactMatch || isSegmentMatch) {
+                fullOperationPath = fullOperationPath.slice(prefixLength);
+                if (fullOperationPath === "") {
+                  fullOperationPath = "/";
+                }
+                break;
+              }
+            }
+          }
+        }
         const oaOperationPath = convertExpressPathToOpenAPI(fullOperationPath);
         doc.paths = (_f = doc.paths) != null ? _f : {};
         doc.paths[oaOperationPath] = (_g = doc.paths[oaOperationPath]) != null ? _g : {};

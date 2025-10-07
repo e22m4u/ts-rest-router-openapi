@@ -423,6 +423,32 @@ describe('RestRouterOpenAPI', function () {
         });
       });
 
+      it('correctly normalizes paths with both leading and trailing slashes', function () {
+        @restController('/test/')
+        class TestController {
+          @putAction('/foo/bar/')
+          someAction() {}
+        }
+        const s = new RestRouterOpenAPI();
+        const r = new RestRouter();
+        r.addController(TestController);
+        s.setService(RestRouter, r);
+        const res = s.genOpenAPIDocument(DUMMY_DOC);
+        expect(res.paths).to.have.property('/test/foo/bar');
+        expect(res).to.be.eql({
+          openapi: OPENAPI_VERSION,
+          info: {title: 'Title'},
+          tags: [{name: 'Test'}],
+          paths: {
+            '/test/foo/bar': {
+              put: {
+                tags: ['Test'],
+              },
+            },
+          },
+        });
+      });
+
       describe('parameters', function () {
         describe('PATH', function () {
           it('adds nothing if no path parameters specified', function () {
@@ -4015,6 +4041,183 @@ describe('RestRouterOpenAPI', function () {
                 },
               },
               '/third': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+            },
+          });
+        });
+      });
+    });
+
+    describe('options', function () {
+      describe('stripPathPrefix option', function () {
+        it('strips a single path prefix provided as a string', function () {
+          @restController('api/v1')
+          class TestController {
+            @getAction('users')
+            getUsers() {}
+          }
+          const s = new RestRouterOpenAPI();
+          const r = new RestRouter();
+          r.addController(TestController);
+          s.setService(RestRouter, r);
+          const res = s.genOpenAPIDocument(DUMMY_DOC, {
+            stripPathPrefix: 'api',
+          });
+          expect(res.paths).to.have.property('/v1/users');
+          expect(res.paths).to.not.have.property('/api/v1/users');
+          expect(res).to.be.eql({
+            openapi: OPENAPI_VERSION,
+            info: {title: 'Title'},
+            tags: [{name: 'Test'}],
+            paths: {
+              '/v1/users': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+            },
+          });
+        });
+
+        it('strips the longest matching prefix when an array is provided', function () {
+          @restController('api/v1')
+          class TestController {
+            @getAction('users')
+            getUsers() {}
+          }
+          const s = new RestRouterOpenAPI();
+          const r = new RestRouter();
+          r.addController(TestController);
+          s.setService(RestRouter, r);
+          const res = s.genOpenAPIDocument(DUMMY_DOC, {
+            stripPathPrefix: ['/api', '/api/v1'],
+          });
+          expect(res.paths).to.have.property('/users');
+          expect(res.paths).to.not.have.property('/v1/users');
+          expect(res).to.be.eql({
+            openapi: OPENAPI_VERSION,
+            info: {title: 'Title'},
+            tags: [{name: 'Test'}],
+            paths: {
+              '/users': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+            },
+          });
+        });
+
+        it('does not change the path if no prefix matches', function () {
+          @restController('internal')
+          class TestController {
+            @getAction('status')
+            getStatus() {}
+          }
+          const s = new RestRouterOpenAPI();
+          const r = new RestRouter();
+          r.addController(TestController);
+          s.setService(RestRouter, r);
+          const res = s.genOpenAPIDocument(DUMMY_DOC, {
+            stripPathPrefix: 'api',
+          });
+          expect(res.paths).to.have.property('/internal/status');
+          expect(res).to.be.eql({
+            openapi: OPENAPI_VERSION,
+            info: {title: 'Title'},
+            tags: [{name: 'Test'}],
+            paths: {
+              '/internal/status': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+            },
+          });
+        });
+
+        it('results in a root path "/" when the entire path matches the prefix', function () {
+          @restController('api/v1')
+          class TestController {
+            @getAction()
+            getRoot() {}
+          }
+          const s = new RestRouterOpenAPI();
+          const r = new RestRouter();
+          r.addController(TestController);
+          s.setService(RestRouter, r);
+          const res = s.genOpenAPIDocument(DUMMY_DOC, {
+            stripPathPrefix: '/api/v1/',
+          });
+          expect(res.paths).to.have.property('/');
+          expect(res.paths).to.not.have.property('/api/v1');
+          expect(res).to.be.eql({
+            openapi: OPENAPI_VERSION,
+            info: {title: 'Title'},
+            tags: [{name: 'Test'}],
+            paths: {
+              '/': {
+                get: {
+                  tags: ['Test'],
+                },
+              },
+            },
+          });
+        });
+
+        it('works correctly with router-level pathPrefix', function () {
+          @restController('users')
+          class UserController {
+            @getAction()
+            getUsers() {}
+          }
+          const s = new RestRouterOpenAPI();
+          const r = new RestRouter();
+          r.addController(UserController, {pathPrefix: 'api/v2'});
+          s.setService(RestRouter, r);
+          const res = s.genOpenAPIDocument(DUMMY_DOC, {
+            stripPathPrefix: 'api',
+          });
+          expect(res.paths).to.have.property('/v2/users');
+          expect(res.paths).to.not.have.property('/api/v2/users');
+          expect(res).to.be.eql({
+            openapi: OPENAPI_VERSION,
+            info: {title: 'Title'},
+            tags: [{name: 'User'}],
+            paths: {
+              '/v2/users': {
+                get: {
+                  tags: ['User'],
+                },
+              },
+            },
+          });
+        });
+
+        it('should not strip a prefix if it only partially matches a path segment', function () {
+          @restController('api/v10')
+          class TestController {
+            @getAction('users')
+            getUsers() {}
+          }
+          const s = new RestRouterOpenAPI();
+          const r = new RestRouter();
+          r.addController(TestController);
+          s.setService(RestRouter, r);
+          const res = s.genOpenAPIDocument(DUMMY_DOC, {
+            stripPathPrefix: '/api/v1',
+          });
+          expect(res.paths).to.have.property('/api/v10/users');
+          expect(res.paths).to.not.have.property('/0/users');
+          expect(res).to.be.eql({
+            openapi: OPENAPI_VERSION,
+            info: {title: 'Title'},
+            tags: [{name: 'Test'}],
+            paths: {
+              '/api/v10/users': {
                 get: {
                   tags: ['Test'],
                 },

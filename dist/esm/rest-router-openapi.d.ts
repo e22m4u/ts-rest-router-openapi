@@ -7,6 +7,16 @@ import { OADocumentObject, OAOperationObject, OAParameterLocation } from '@e22m4
  */
 export declare const OPENAPI_VERSION = "3.1.0";
 /**
+ * OpenAPI generation options.
+ */
+export type OpenAPIGenOptions = {
+    stripPathPrefix?: string | string[];
+};
+/**
+ * OpenAPI root document.
+ */
+export type OpenAPIRootDocument = Flatten<Omit<OADocumentObject, 'openapi'>>;
+/**
  * OpenAPI to RestRouter integration service.
  */
 export declare class RestRouterOpenAPI extends Service {
@@ -24,8 +34,9 @@ export declare class RestRouterOpenAPI extends Service {
      * Generate OpenAPI documentation.
      *
      * @param doc
+     * @param options
      */
-    genOpenAPIDocument(doc: Flatten<Omit<OADocumentObject, 'openapi'>>): {
+    genOpenAPIDocument(doc: OpenAPIRootDocument, options?: OpenAPIGenOptions): {
         info: import("@e22m4u/ts-openapi").OAInfoObject;
         jsonSchemaDialect?: string | undefined;
         servers?: import("@e22m4u/ts-openapi").OAServerObject[] | undefined;
