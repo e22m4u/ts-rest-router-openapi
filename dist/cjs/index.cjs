@@ -1748,8 +1748,6 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service3.Ser
         const rootPathPrefix = (_d = controllerRootOptions == null ? void 0 : controllerRootOptions.pathPrefix) != null ? _d : "";
         const operationPath = ((_e = actionMd.path) != null ? _e : "").replace(/(^\/+|\/+$)/g, "").replace(/\/+/g, "/");
         let fullOperationPath = `/${rootPathPrefix}/${tagPath}/${operationPath}`.replace(/\/+$/, "").replace(/\/+/g, "/") || "/";
-        console.log(fullOperationPath);
-        console.log(options == null ? void 0 : options.stripPathPrefix);
         if (options == null ? void 0 : options.stripPathPrefix) {
           let pathPrefixStripList = [options == null ? void 0 : options.stripPathPrefix].flat();
           pathPrefixStripList.sort((a, b) => b.length - a.length);

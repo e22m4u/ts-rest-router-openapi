@@ -208,8 +208,6 @@ export class RestRouterOpenAPI extends Service {
           `/${rootPathPrefix}/${tagPath}/${operationPath}`
             .replace(/\/+$/, '')
             .replace(/\/+/g, '/') || '/';
-        console.log(fullOperationPath);
-        console.log(options?.stripPathPrefix);
         // применение опции "stripPathPrefix",
         // которая удаляет начальную часть из адреса операции
         if (options?.stripPathPrefix) {
