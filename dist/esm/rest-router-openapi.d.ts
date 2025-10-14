@@ -1,6 +1,6 @@
 import { Flatten } from './types.js';
 import { Service } from '@e22m4u/js-service';
-import { DataSchema } from '@e22m4u/ts-data-schema';
+import { DataSchema } from '@e22m4u/js-data-schema';
 import { OADocumentObject, OAOperationObject, OAParameterLocation } from '@e22m4u/ts-openapi';
 /**
  * OpenAPI version.

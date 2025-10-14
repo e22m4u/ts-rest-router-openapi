@@ -16,6 +16,7 @@ import {
   RestRouter,
   REST_CONTROLLER_METADATA_KEY,
 } from '@e22m4u/ts-rest-router';
+
 import {
   OADataType,
   OAMediaType,
@@ -27,8 +28,8 @@ import {
 import {expect} from 'chai';
 import {Reflector} from '@e22m4u/ts-reflector';
 import {oaHidden} from './decorators/index.js';
+import {DataType} from '@e22m4u/js-data-schema';
 import {oaVisible} from './decorators/index.js';
-import {DataType} from '@e22m4u/ts-data-schema';
 import {OPENAPI_VERSION} from './rest-router-openapi.js';
 import {RestRouterOpenAPI} from './rest-router-openapi.js';
 

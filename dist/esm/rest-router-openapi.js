@@ -2,7 +2,7 @@ import { Errorf } from '@e22m4u/js-format';
 import { Service } from '@e22m4u/js-service';
 import { cloneDeep } from './utils/index.js';
 import { deepAssign } from './utils/index.js';
-import { DataType } from '@e22m4u/ts-data-schema';
+import { DataType } from '@e22m4u/js-data-schema';
 import { dataSchemaToOASchemaObject } from './utils/index.js';
 import { OAVisibilityReflector } from './decorators/index.js';
 import { convertExpressPathToOpenAPI } from './utils/index.js';
