@@ -213,7 +213,7 @@ var REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP = /* @__PURE__ */ new Map([
   [import_ts_rest_router.RequestDataSource.PARAMS, import_ts_openapi2.OAParameterLocation.PATH],
   [import_ts_rest_router.RequestDataSource.QUERY, import_ts_openapi2.OAParameterLocation.QUERY],
   [import_ts_rest_router.RequestDataSource.HEADERS, import_ts_openapi2.OAParameterLocation.HEADER],
-  [import_ts_rest_router.RequestDataSource.COOKIE, import_ts_openapi2.OAParameterLocation.COOKIE]
+  [import_ts_rest_router.RequestDataSource.COOKIES, import_ts_openapi2.OAParameterLocation.COOKIE]
 ]);
 var DATA_TYPE_TO_OA_MEDIA_TYPE = /* @__PURE__ */ new Map([
   [import_js_data_schema2.DataType.ANY, import_ts_openapi2.OAMediaType.TEXT_PLAIN],

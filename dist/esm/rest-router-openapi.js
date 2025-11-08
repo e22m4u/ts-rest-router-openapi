@@ -19,7 +19,7 @@ const REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP = new Map([
     [RequestDataSource.PARAMS, OAParameterLocation.PATH],
     [RequestDataSource.QUERY, OAParameterLocation.QUERY],
     [RequestDataSource.HEADERS, OAParameterLocation.HEADER],
-    [RequestDataSource.COOKIE, OAParameterLocation.COOKIE],
+    [RequestDataSource.COOKIES, OAParameterLocation.COOKIE],
 ]);
 /**
  * DataType to OAMediaType.

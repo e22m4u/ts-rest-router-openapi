@@ -40,10 +40,10 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@e22m4u/js-data-schema": "~0.4.6",
-    "@e22m4u/js-format": "~0.2.0",
-    "@e22m4u/js-service": "~0.4.5",
-    "@e22m4u/ts-openapi": "~0.1.10",
+    "@e22m4u/js-data-schema": "~0.4.7",
+    "@e22m4u/js-format": "~0.2.1",
+    "@e22m4u/js-service": "~0.4.6",
+    "@e22m4u/ts-openapi": "~0.1.11",
     "@e22m4u/ts-reflector": "~0.1.8"
   },
   "peerDependencies": {
