@@ -1,5 +1,5 @@
 import { OADataType } from '@e22m4u/ts-openapi';
-import { DataType } from '@e22m4u/js-data-schema';
+import { DataType } from '@e22m4u/ts-data-schema';
 /**
  * Конвертация DataSchema в OASchemaObject.
  *

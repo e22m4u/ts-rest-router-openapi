@@ -139,20 +139,20 @@ __name(deepAssign, "deepAssign");
 
 // dist/esm/utils/data-schema-to-oa-schema-object.js
 var import_ts_openapi = require("@e22m4u/ts-openapi");
-var import_js_data_schema = require("@e22m4u/js-data-schema");
+var import_ts_data_schema = require("@e22m4u/ts-data-schema");
 function dataSchemaToOASchemaObject(dataSchema, defaultType) {
   const oaSchema = {};
   switch (dataSchema.type) {
-    case import_js_data_schema.DataType.STRING:
+    case import_ts_data_schema.DataType.STRING:
       oaSchema.type = import_ts_openapi.OADataType.STRING;
       break;
-    case import_js_data_schema.DataType.NUMBER:
+    case import_ts_data_schema.DataType.NUMBER:
       oaSchema.type = import_ts_openapi.OADataType.NUMBER;
       break;
-    case import_js_data_schema.DataType.BOOLEAN:
+    case import_ts_data_schema.DataType.BOOLEAN:
       oaSchema.type = import_ts_openapi.OADataType.BOOLEAN;
       break;
-    case import_js_data_schema.DataType.ARRAY:
+    case import_ts_data_schema.DataType.ARRAY:
       oaSchema.type = import_ts_openapi.OADataType.ARRAY;
       if (dataSchema.items) {
         const oaItemsSchema = dataSchemaToOASchemaObject(dataSchema.items, defaultType);
@@ -160,7 +160,7 @@ function dataSchemaToOASchemaObject(dataSchema, defaultType) {
           oaSchema.items = oaItemsSchema;
       }
       break;
-    case import_js_data_schema.DataType.OBJECT:
+    case import_ts_data_schema.DataType.OBJECT:
       oaSchema.type = import_ts_openapi.OADataType.OBJECT;
       if (dataSchema.properties) {
         oaSchema.properties = {};
@@ -171,7 +171,7 @@ function dataSchemaToOASchemaObject(dataSchema, defaultType) {
         }
       }
       break;
-    case import_js_data_schema.DataType.ANY:
+    case import_ts_data_schema.DataType.ANY:
       break;
   }
   if (!oaSchema.type && defaultType) {
@@ -205,7 +205,7 @@ function convertExpressPathToOpenAPI(expressPath) {
 __name(convertExpressPathToOpenAPI, "convertExpressPathToOpenAPI");
 
 // dist/esm/rest-router-openapi.js
-var import_js_data_schema2 = require("@e22m4u/js-data-schema");
+var import_ts_data_schema2 = require("@e22m4u/ts-data-schema");
 var import_ts_openapi2 = require("@e22m4u/ts-openapi");
 var import_ts_rest_router = require("@e22m4u/ts-rest-router");
 var OPENAPI_VERSION = "3.1.0";
@@ -216,12 +216,12 @@ var REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP = /* @__PURE__ */ new Map([
   [import_ts_rest_router.RequestDataSource.COOKIES, import_ts_openapi2.OAParameterLocation.COOKIE]
 ]);
 var DATA_TYPE_TO_OA_MEDIA_TYPE = /* @__PURE__ */ new Map([
-  [import_js_data_schema2.DataType.ANY, import_ts_openapi2.OAMediaType.TEXT_PLAIN],
-  [import_js_data_schema2.DataType.STRING, import_ts_openapi2.OAMediaType.TEXT_PLAIN],
-  [import_js_data_schema2.DataType.NUMBER, import_ts_openapi2.OAMediaType.APPLICATION_JSON],
-  [import_js_data_schema2.DataType.BOOLEAN, import_ts_openapi2.OAMediaType.APPLICATION_JSON],
-  [import_js_data_schema2.DataType.ARRAY, import_ts_openapi2.OAMediaType.APPLICATION_JSON],
-  [import_js_data_schema2.DataType.OBJECT, import_ts_openapi2.OAMediaType.APPLICATION_JSON]
+  [import_ts_data_schema2.DataType.ANY, import_ts_openapi2.OAMediaType.TEXT_PLAIN],
+  [import_ts_data_schema2.DataType.STRING, import_ts_openapi2.OAMediaType.TEXT_PLAIN],
+  [import_ts_data_schema2.DataType.NUMBER, import_ts_openapi2.OAMediaType.APPLICATION_JSON],
+  [import_ts_data_schema2.DataType.BOOLEAN, import_ts_openapi2.OAMediaType.APPLICATION_JSON],
+  [import_ts_data_schema2.DataType.ARRAY, import_ts_openapi2.OAMediaType.APPLICATION_JSON],
+  [import_ts_data_schema2.DataType.OBJECT, import_ts_openapi2.OAMediaType.APPLICATION_JSON]
 ]);
 var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service.Service {
   /**
@@ -245,10 +245,10 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service.Serv
     if (paramSchema) {
       const oaMediaTypeObject = {};
       oaParameter.content = { [import_ts_openapi2.OAMediaType.APPLICATION_JSON]: oaMediaTypeObject };
-      if (paramSchema.type === import_js_data_schema2.DataType.ANY) {
+      if (paramSchema.type === import_ts_data_schema2.DataType.ANY) {
         oaMediaTypeObject.schema = dataSchemaToOASchemaObject({
           ...paramSchema,
-          type: import_js_data_schema2.DataType.STRING
+          type: import_ts_data_schema2.DataType.STRING
         });
       } else if (paramSchema.type != null) {
         oaMediaTypeObject.schema = dataSchemaToOASchemaObject(paramSchema);
@@ -337,18 +337,18 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service.Serv
           } else {
             requestDataSchema = requestDataMd.schema;
           }
-          if (REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source) && requestDataSchema && requestDataSchema.type === import_js_data_schema2.DataType.OBJECT && requestDataSchema.properties && typeof requestDataSchema.properties === "object" && Object.keys(requestDataSchema.properties).length && requestDataMd.property) {
+          if (REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source) && requestDataSchema && requestDataSchema.type === import_ts_data_schema2.DataType.OBJECT && requestDataSchema.properties && typeof requestDataSchema.properties === "object" && Object.keys(requestDataSchema.properties).length && requestDataMd.property) {
             const oaLocation = REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source);
             const paramSchema = requestDataSchema && typeof requestDataSchema === "object" && requestDataSchema.properties && typeof requestDataSchema.properties === "object" && requestDataSchema.properties[requestDataMd.property] && typeof requestDataSchema.properties[requestDataMd.property] === "object" && requestDataSchema.properties[requestDataMd.property] || void 0;
             this.addParameterToOAOperation(oaOperation, requestDataMd.property, oaLocation, paramSchema);
-          } else if (REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source) && requestDataSchema && requestDataSchema.type === import_js_data_schema2.DataType.OBJECT && requestDataSchema.properties && typeof requestDataSchema.properties === "object" && Object.keys(requestDataSchema.properties).length) {
+          } else if (REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source) && requestDataSchema && requestDataSchema.type === import_ts_data_schema2.DataType.OBJECT && requestDataSchema.properties && typeof requestDataSchema.properties === "object" && Object.keys(requestDataSchema.properties).length) {
             const oaLocation = REQUEST_DATA_SOURCE_TO_OPENAPI_LOCATION_MAP.get(requestDataMd.source);
             const propsSchemaEntries = Object.entries(requestDataSchema.properties);
             for (const [paramName, paramSchema] of propsSchemaEntries) {
               this.addParameterToOAOperation(oaOperation, paramName, oaLocation, paramSchema);
             }
           } else if (requestDataMd.source === import_ts_rest_router.RequestDataSource.BODY) {
-            const dataType = (requestDataSchema == null ? void 0 : requestDataSchema.type) || import_js_data_schema2.DataType.ANY;
+            const dataType = (requestDataSchema == null ? void 0 : requestDataSchema.type) || import_ts_data_schema2.DataType.ANY;
             const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
             if (!oaMediaType)
               throw new import_js_format.Errorf("MIME of %v is not defined.", dataType);
@@ -361,7 +361,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service.Serv
             oaMediaObject.schema = oaMediaObject.schema || defaultOASchema;
             const existingOASchema = oaMediaObject.schema;
             const oaSchema = dataSchemaToOASchemaObject({ ...requestDataSchema, type: dataType }, import_ts_openapi2.OADataType.STRING);
-            if (dataType === import_js_data_schema2.DataType.OBJECT) {
+            if (dataType === import_ts_data_schema2.DataType.OBJECT) {
               if (existingOASchema.type === import_ts_openapi2.OADataType.OBJECT) {
                 deepAssign(existingOASchema, oaSchema);
               } else {
@@ -376,7 +376,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service.Serv
                 if (!Object.keys(oaSchemaProps).length)
                   delete oaMediaObject.schema.properties;
               }
-            } else if (dataType !== import_js_data_schema2.DataType.ANY) {
+            } else if (dataType !== import_ts_data_schema2.DataType.ANY) {
               if (oaSchema) {
                 oaMediaObject.schema = oaSchema;
               }
@@ -396,7 +396,7 @@ var _RestRouterOpenAPI = class _RestRouterOpenAPI extends import_js_service.Serv
             responseBodySchema = responseBodyMd.schema;
           }
           if (responseBodySchema) {
-            const dataType = responseBodySchema.type || import_js_data_schema2.DataType.ANY;
+            const dataType = responseBodySchema.type || import_ts_data_schema2.DataType.ANY;
             const oaMediaType = DATA_TYPE_TO_OA_MEDIA_TYPE.get(dataType);
             if (!oaMediaType)
               throw new import_js_format.Errorf("MIME of %v is not defined.", dataType);
