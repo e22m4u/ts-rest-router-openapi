@@ -10,37 +10,37 @@ import {
 } from './data-schema-to-oa-schema-object.js';
 
 describe('dataSchemaToOASchemaObject', function () {
-  it('should convert DataType.ANY to an OASchemaObject without a type field', function () {
+  it('should convert a DataType.ANY schema to an empty OASchemaObject', function () {
     const ds: DataSchema = {type: DataType.ANY};
     const result = dataSchemaToOASchemaObject(ds);
     expect(result).to.be.eql({});
   });
 
-  it('should convert DataType.STRING to OADataType.STRING', function () {
+  it('should convert a DataType.STRING schema', function () {
     const ds: DataSchema = {type: DataType.STRING};
     const result = dataSchemaToOASchemaObject(ds);
     expect(result).to.be.eql({type: OADataType.STRING});
   });
 
-  it('should convert DataType.NUMBER to OADataType.NUMBER', function () {
+  it('should convert a DataType.NUMBER schema', function () {
     const ds: DataSchema = {type: DataType.NUMBER};
     const result = dataSchemaToOASchemaObject(ds);
     expect(result).to.be.eql({type: OADataType.NUMBER});
   });
 
-  it('should convert DataType.BOOLEAN to OADataType.BOOLEAN', function () {
+  it('should convert a DataType.BOOLEAN schema', function () {
     const ds: DataSchema = {type: DataType.BOOLEAN};
     const result = dataSchemaToOASchemaObject(ds);
     expect(result).to.be.eql({type: OADataType.BOOLEAN});
   });
 
-  it('should convert DataType.ARRAY to OADataType.ARRAY', function () {
+  it('should convert a DataType.ARRAY schema', function () {
     const ds: DataSchema = {type: DataType.ARRAY};
     const result = dataSchemaToOASchemaObject(ds);
     expect(result).to.be.eql({type: OADataType.ARRAY});
   });
 
-  it('should convert DataType.ARRAY to OADataType.ARRAY with "items" option', function () {
+  it('should convert a DataType.ARRAY schema with an "items" definition', function () {
     const ds: DataSchema = {
       type: DataType.ARRAY,
       items: {type: DataType.STRING},
@@ -52,13 +52,13 @@ describe('dataSchemaToOASchemaObject', function () {
     });
   });
 
-  it('should convert DataType.OBJECT to OADataType.OBJECT', function () {
+  it('should convert a DataType.OBJECT schema', function () {
     const ds: DataSchema = {type: DataType.OBJECT};
     const result = dataSchemaToOASchemaObject(ds);
     expect(result).to.be.eql({type: OADataType.OBJECT});
   });
 
-  it('should convert DataType.OBJECT to OADataType.OBJECT with "properties" option', function () {
+  it('should convert a DataType.OBJECT schema with a "properties" definition', function () {
     const ds: DataSchema = {
       type: DataType.OBJECT,
       properties: {
@@ -76,7 +76,7 @@ describe('dataSchemaToOASchemaObject', function () {
     });
   });
 
-  it('should convert a nested DataType.OBJECT', function () {
+  it('should recursively convert nested DataType.OBJECT schemas', function () {
     const ds: DataSchema = {
       type: DataType.OBJECT,
       properties: {
@@ -114,7 +114,7 @@ describe('dataSchemaToOASchemaObject', function () {
     });
   });
 
-  it('should convert a complex structure', function () {
+  it('should convert a complex schema with mixed types, arrays, and defaults', function () {
     const ds: DataSchema = {
       type: DataType.OBJECT,
       properties: {
@@ -163,7 +163,7 @@ describe('dataSchemaToOASchemaObject', function () {
     });
   });
 
-  it('should propagate an error if a default factory throws an error', function () {
+  it('should re-throw an error from a default value factory', function () {
     const errorMessage = 'Factory Error!';
     const ds: DataSchema = {
       type: DataType.STRING,
@@ -175,7 +175,7 @@ describe('dataSchemaToOASchemaObject', function () {
   });
 
   describe('when the data schema has the "default" option', function () {
-    it('should convert a static default value', function () {
+    it('should convert with a static value', function () {
       const result = dataSchemaToOASchemaObject({
         type: DataType.STRING,
         default: 'hello',
@@ -183,7 +183,7 @@ describe('dataSchemaToOASchemaObject', function () {
       expect(result).to.be.eql({type: OADataType.STRING, default: 'hello'});
     });
 
-    it('should convert a factory function default value', function () {
+    it('should convert with a factory function', function () {
       const result = dataSchemaToOASchemaObject({
         type: DataType.NUMBER,
         default: () => 123,
@@ -191,7 +191,7 @@ describe('dataSchemaToOASchemaObject', function () {
       expect(result).to.be.eql({type: OADataType.NUMBER, default: 123});
     });
 
-    it('should not set default if factory returns undefined', function () {
+    it('should omit the option when a factory returns undefined', function () {
       const result = dataSchemaToOASchemaObject({
         type: DataType.STRING,
         default: () => undefined,
@@ -199,7 +199,7 @@ describe('dataSchemaToOASchemaObject', function () {
       expect(result).to.be.eql({type: OADataType.STRING});
     });
 
-    it('should not set default if dataSchema.default is explicitly undefined', function () {
+    it('should omit the option when its value is explicitly undefined', function () {
       const result = dataSchemaToOASchemaObject({
         type: DataType.STRING,
         default: undefined,
@@ -207,7 +207,7 @@ describe('dataSchemaToOASchemaObject', function () {
       expect(result).to.be.eql({type: OADataType.STRING});
     });
 
-    it('should set default if value is null', function () {
+    it('should convert with a null value', function () {
       const result = dataSchemaToOASchemaObject({
         type: DataType.ANY,
         default: null,
@@ -217,7 +217,7 @@ describe('dataSchemaToOASchemaObject', function () {
   });
 
   describe('when the data schema has the "oaDefault" option', function () {
-    it('should convert a static default value', function () {
+    it('should convert with a static value', function () {
       const result = dataSchemaToOASchemaObject({
         type: DataType.STRING,
         oaDefault: 'hello',
@@ -225,7 +225,7 @@ describe('dataSchemaToOASchemaObject', function () {
       expect(result).to.be.eql({type: OADataType.STRING, default: 'hello'});
     });
 
-    it('should convert a factory function default value', function () {
+    it('should convert with a factory function', function () {
       const result = dataSchemaToOASchemaObject({
         type: DataType.NUMBER,
         oaDefault: () => 123,
@@ -233,7 +233,7 @@ describe('dataSchemaToOASchemaObject', function () {
       expect(result).to.be.eql({type: OADataType.NUMBER, default: 123});
     });
 
-    it('should not set default if factory returns undefined', function () {
+    it('should omit the option when a factory returns undefined', function () {
       const result = dataSchemaToOASchemaObject({
         type: DataType.STRING,
         oaDefault: () => undefined,
@@ -241,7 +241,7 @@ describe('dataSchemaToOASchemaObject', function () {
       expect(result).to.be.eql({type: OADataType.STRING});
     });
 
-    it('should not set default if dataSchema.default is explicitly undefined', function () {
+    it('should omit the option when its value is explicitly undefined', function () {
       const result = dataSchemaToOASchemaObject({
         type: DataType.STRING,
         oaDefault: undefined,
@@ -249,9 +249,11 @@ describe('dataSchemaToOASchemaObject', function () {
       expect(result).to.be.eql({type: OADataType.STRING});
     });
 
-    it('should set default if value is null', function () {
-      const ds: DataSchemaWithOaOptions = {type: DataType.ANY, oaDefault: null};
-      const result = dataSchemaToOASchemaObject(ds);
+    it('should convert with a null value', function () {
+      const result = dataSchemaToOASchemaObject({
+        type: DataType.ANY,
+        oaDefault: null,
+      });
       expect(result).to.be.eql({default: null});
     });
 
@@ -266,19 +268,19 @@ describe('dataSchemaToOASchemaObject', function () {
   });
 
   describe('when the "defaultType" parameter is provided', function () {
-    it('should use defaultType when dataSchema.type is DataType.ANY', function () {
+    it('should apply the default type when the schema type is DataType.ANY', function () {
       const ds: DataSchema = {type: DataType.ANY};
       const result = dataSchemaToOASchemaObject(ds, OADataType.STRING);
       expect(result).to.be.eql({type: OADataType.STRING});
     });
 
-    it('should use defaultType with dataSchema.default when dataSchema.type is DataType.ANY', function () {
+    it('should apply the default type and use the "default" option when the schema type is DataType.ANY', function () {
       const ds: DataSchema = {type: DataType.ANY, default: 'test'};
       const result = dataSchemaToOASchemaObject(ds, OADataType.STRING);
       expect(result).to.be.eql({type: OADataType.STRING, default: 'test'});
     });
 
-    it('should use defaultType with dataSchema.oaDefault when dataSchema.type is DataType.ANY', function () {
+    it('should apply the default type and use the "oaDefault" option when the schema type is DataType.ANY', function () {
       const ds: DataSchemaWithOaOptions = {
         type: DataType.ANY,
         oaDefault: 'test',
@@ -287,19 +289,19 @@ describe('dataSchemaToOASchemaObject', function () {
       expect(result).to.be.eql({type: OADataType.STRING, default: 'test'});
     });
 
-    it('should ignore defaultType when dataSchema.type is already defined', function () {
+    it('should ignore the default type when the schema type is already defined', function () {
       const ds: DataSchema = {type: DataType.NUMBER};
       const result = dataSchemaToOASchemaObject(ds, OADataType.STRING);
       expect(result).to.be.eql({type: OADataType.NUMBER});
     });
 
-    it('should not apply defaultType if defaultType is undefined and dataSchema.type is DataType.ANY', function () {
+    it('should not apply the default type if it is undefined and the schema is DataType.ANY', function () {
       const ds: DataSchema = {type: DataType.ANY};
       const result = dataSchemaToOASchemaObject(ds, undefined);
       expect(result).to.be.eql({});
     });
 
-    it('should apply defaultType to array items if item schema is DataType.ANY', function () {
+    it('should apply the default type to array items when their schema type is DataType.ANY', function () {
       const ds: DataSchema = {
         type: DataType.ARRAY,
         items: {type: DataType.ANY},
@@ -311,7 +313,7 @@ describe('dataSchemaToOASchemaObject', function () {
       });
     });
 
-    it('should not apply defaultType to array items if item schema type is defined', function () {
+    it('should ignore the default type for array items when their schema type is already defined', function () {
       const ds: DataSchema = {
         type: DataType.ARRAY,
         items: {type: DataType.STRING},
@@ -323,7 +325,7 @@ describe('dataSchemaToOASchemaObject', function () {
       });
     });
 
-    it('should apply defaultType to object properties if property schema is DataType.ANY', function () {
+    it('should apply the default type to object properties when their schema type is DataType.ANY', function () {
       const ds: DataSchema = {
         type: DataType.OBJECT,
         properties: {
@@ -341,7 +343,7 @@ describe('dataSchemaToOASchemaObject', function () {
       });
     });
 
-    it('should not apply defaultType to object properties if property schema type is defined', function () {
+    it('should ignore the default type for object properties when their schema type is already defined', function () {
       const ds: DataSchema = {
         type: DataType.OBJECT,
         properties: {
@@ -357,7 +359,7 @@ describe('dataSchemaToOASchemaObject', function () {
       });
     });
 
-    it('should handle defaultType in complex nested structures with DataType.ANY', function () {
+    it('should recursively apply the default type in a complex nested schema', function () {
       const ds: DataSchema = {
         type: DataType.OBJECT,
         properties: {
