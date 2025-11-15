@@ -49,13 +49,16 @@ export function dataSchemaToOASchemaObject(dataSchema, defaultType) {
     }
     // преобразование значения по умолчанию,
     // с учетом возможной фабрики
-    if (dataSchema.default !== undefined) {
+    const dsDefault = dataSchema.oaDefault === undefined
+        ? dataSchema.default
+        : dataSchema.oaDefault;
+    if (dsDefault !== undefined) {
         let resolvedDefaultValue;
-        if (typeof dataSchema.default === 'function') {
-            resolvedDefaultValue = dataSchema.default();
+        if (typeof dsDefault === 'function') {
+            resolvedDefaultValue = dsDefault();
         }
         else {
-            resolvedDefaultValue = dataSchema.default;
+            resolvedDefaultValue = dsDefault;
         }
         if (resolvedDefaultValue !== undefined)
             oaSchema.default = resolvedDefaultValue;

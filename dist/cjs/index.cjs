@@ -177,12 +177,13 @@ function dataSchemaToOASchemaObject(dataSchema, defaultType) {
   if (!oaSchema.type && defaultType) {
     oaSchema.type = defaultType;
   }
-  if (dataSchema.default !== void 0) {
+  const dsDefault = dataSchema.oaDefault === void 0 ? dataSchema.default : dataSchema.oaDefault;
+  if (dsDefault !== void 0) {
     let resolvedDefaultValue;
-    if (typeof dataSchema.default === "function") {
-      resolvedDefaultValue = dataSchema.default();
+    if (typeof dsDefault === "function") {
+      resolvedDefaultValue = dsDefault();
     } else {
-      resolvedDefaultValue = dataSchema.default;
+      resolvedDefaultValue = dsDefault;
     }
     if (resolvedDefaultValue !== void 0)
       oaSchema.default = resolvedDefaultValue;
